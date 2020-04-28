@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <title>EmploymentAgencyDB</title>
+</head>
+<body>
+    {% for table_name in urls %}
+    <div>
+    <a href="{{urls[table_name]}}">{{table_name}}</a>
+    </div>
+    {% endfor %}
+</body>
+</html>
