@@ -1,10 +1,12 @@
+""" Flask сервер работы с EmploymentAgencyDB """
 from flask import render_template, url_for
-from . import app, cursor
+from app import app, cursor
 
 
 @app.route('/index')
 @app.route('/')
 def index():
+    """ Стартовая страница приложения """
     urls = {'Соискатели': url_for('aspirants'),
             'Должности': url_for('positions'),
             'Данные о соискателях': url_for('aspirants_data'),
@@ -16,6 +18,7 @@ def index():
 
 @app.route('/aspirants')
 def aspirants():
+    """ Данные из таблицы соискателей """
     sql_query = "SELECT * FROM dbo.Aspirants"
 
     cursor.execute(sql_query)
@@ -25,6 +28,7 @@ def aspirants():
 
 @app.route('/positions')
 def positions():
+    """ Данные из таблицы должностей """
     sql_query = "SELECT * FROM dbo.Positions"
 
     cursor.execute(sql_query)
@@ -34,6 +38,7 @@ def positions():
 
 @app.route('/aspirants_data')
 def aspirants_data():
+    """ Данные из таблицы "Данные о соискателях" """
     sql_query = "SELECT * FROM dbo.AspirantData"
 
     cursor.execute(sql_query)
@@ -43,6 +48,7 @@ def aspirants_data():
 
 @app.route('/education')
 def education():
+    """ Данные из таблицы образования """
     sql_query = "SELECT * FROM dbo.EducationData"
 
     cursor.execute(sql_query)
@@ -52,6 +58,7 @@ def education():
 
 @app.route('/employers')
 def employers():
+    """ Данные из таблицы работодателей """
     sql_query = "SELECT * FROM dbo.Employers"
 
     cursor.execute(sql_query)
@@ -61,6 +68,7 @@ def employers():
 
 @app.route('/vacancies')
 def vacancies():
+    """ Данные из таблицы вакансий """
     sql_query = "SELECT * FROM dbo.Vacancies"
 
     cursor.execute(sql_query)

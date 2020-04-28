@@ -1,3 +1,4 @@
+""" Flask сервер работы с EmploymentAgencyDB """
 from app import app, connection
 
 
