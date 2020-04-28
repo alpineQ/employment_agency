@@ -4,8 +4,31 @@
 <head>
     <meta charset="utf-8" />
     <title>Данные о соискателях</title>
+    <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    </style>
 </head>
 <body>
-{{ results }}
+<table style="width:100%">
+    <tr>
+        <th>Код соискателя</th>
+        <th>Дата рождения</th>
+        <th>Адрес регистрации</th>
+        <th>Номер телефона</th>
+        <th>Код образования</th>
+    </tr>
+    {% for row in results %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[4] }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
 </body>
 </html>
