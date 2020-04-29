@@ -7,23 +7,23 @@ from app import app, cursor
 @app.route('/')
 def index():
     """ Стартовая страница приложения """
-    urls = {'Соискатели': url_for('aspirants'),
-            'Должности': url_for('positions'),
-            'Данные о соискателях': url_for('aspirants_data'),
+    urls = {'Должности': url_for('positions'),
+            'Работодатели': url_for('employers'),
+            'Соискатели': url_for('applicants'),
+            'Данные о соискателях': url_for('applicant_data'),
             'Данные об образовании': url_for('education'),
-            'Вакансии': url_for('vacancies'),
-            'Работодатели': url_for('employers')}
+            'Вакансии': url_for('vacancies')}
     return render_template('index.html', urls=urls)
 
 
-@app.route('/aspirants')
-def aspirants():
+@app.route('/applicants')
+def applicants():
     """ Данные из таблицы соискателей """
-    sql_query = "SELECT * FROM dbo.Aspirants"
+    sql_query = "SELECT * FROM dbo.Applicants"
 
     cursor.execute(sql_query)
     results = cursor.fetchall()
-    return render_template('aspirants.html', results=results)
+    return render_template('applicants.html', results=results)
 
 
 @app.route('/positions')
@@ -36,14 +36,14 @@ def positions():
     return render_template('positions.html', results=results)
 
 
-@app.route('/aspirants_data')
-def aspirants_data():
+@app.route('/applicant_data')
+def applicant_data():
     """ Данные из таблицы "Данные о соискателях" """
-    sql_query = "SELECT * FROM dbo.AspirantData"
+    sql_query = "SELECT * FROM dbo.ApplicantData"
 
     cursor.execute(sql_query)
     results = cursor.fetchall()
-    return render_template('aspirants_data.html', results=results)
+    return render_template('applicant_data.html', results=results)
 
 
 @app.route('/education')
