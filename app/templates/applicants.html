@@ -14,16 +14,18 @@
 <table style="width:100%">
     <tr>
         <th>Код соискателя</th>
+        <th>ФИО Соискателя</th>
         <th>Дата обращения</th>
         <th>Код должности</th>
         <th>Опыт работы</th>
     </tr>
     {% for row in results %}
     <tr>
-        <td>{{ row[0] }}</td>
+        <td>{{ row[0][0:8] }}</td>
         <td>{{ row[1] }}</td>
         <td>{{ row[2] }}</td>
-        <td>{{ row[3] }}</td>
+        <td>{{ row[3][0:8] }}</td>
+        <td>{{ row[4] }}</td>
     </tr>
     {% endfor %}
 

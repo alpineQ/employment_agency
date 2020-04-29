@@ -3,9 +3,15 @@ import pyodbc
 from flask import Flask
 
 # pylint: disable=invalid-name
-server = '.\\SQLEXPRESS'
+server = 'localhost'
 database = 'EmploymentAgencyDB'
-connection = pyodbc.connect('Driver={SQL Server};Server='+server+';Database='+database+';')
+password = 'QwErTy123!'
+username = 'SA'
+connection = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
+                            'Server='+server+';'
+                            'Database='+database+';'
+                            'uid='+username+';'
+                            'PWD='+password)
 cursor = connection.cursor()
 
 app = Flask(__name__)

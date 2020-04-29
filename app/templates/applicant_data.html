@@ -21,11 +21,11 @@
     </tr>
     {% for row in results %}
     <tr>
-        <td>{{ row[0] }}</td>
+        <td>{{ row[0][0:8] }}</td>
         <td>{{ row[1] }}</td>
         <td>{{ row[2] }}</td>
         <td>{{ row[3] }}</td>
-        <td>{{ row[4] }}</td>
+        <td>{{ row[4][0:8] }}</td>
     </tr>
     {% endfor %}
 

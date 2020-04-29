@@ -26,7 +26,8 @@ PATRONYMIC_MALE = [' Иванович', ' Андреевич', ' Юрьевич'
 PATRONYMIC_FEMALE = [' Андреевна', ' Семёновна', ' Сергеевна', ' Дмитриевна', ' Ивановна']
 
 EDUCATION_DEGREE = ['Высшее', 'Среднее', 'Начальное', 'Базовое']
-EDUCATION_SPHERE = ['Экономики', 'Программирования', 'Администрирования', 'Дизайна']
+EDUCATION_SPHERE = ['экономики', 'программирования', 'администрирования', 'дизайна']
+
 
 print('Заполнение таблицы "Работодатели"...')
 SQL_QUERY = f"INSERT INTO dbo.Employers (EmployerOrganization) VALUES (?);"
@@ -43,20 +44,21 @@ for i in range(AMOUNT_OF_POSITIONS):
     cursor.execute(SQL_QUERY, position)
 connection.commit()
 
-# pylint: disable=invalid-name
-cursor.execute("SELECT EmployerCode FROM dbo.Employers")
-employer_codes = cursor.fetchall()
 
+# pylint: disable=invalid-name
 cursor.execute("SELECT PositionCode FROM dbo.Positions")
 position_codes = cursor.fetchall()
 
+cursor.execute("SELECT EmployerCode FROM dbo.Employers")
+employer_codes = cursor.fetchall()
+
+
 print('Заполнение таблицы "Вакансии"...')
 SQL_QUERY = f"INSERT INTO dbo.Vacancies (EmployerCode, PositionCode, VacancyStatus) VALUES (?,?,?);"
-n = 0
+position_code = iter(position_codes)
 for employer_code in employer_codes:
-    for i in range(10):
-        cursor.execute(SQL_QUERY, employer_code, position_codes[n], choice(VACANCY_STATUS))
-        n += 1
+    for i in range(VACANCY_PER_EMPLOYER):
+        cursor.execute(SQL_QUERY, employer_code[0], next(position_code)[0], choice(VACANCY_STATUS))
 connection.commit()
 
 
@@ -64,10 +66,11 @@ print('Заполнение таблицы "Соискатели"...')
 SQL_QUERY = f"INSERT INTO dbo.Applicants (ApplicantFullName, PositionCode) VALUES (?,?);"
 for i in range(AMOUNT_OF_APPLICANTS):
     if choice(['male', 'female']) == 'male':
-        applicant = NAME_MALE + SECOND_NAME_MALE + PATRONYMIC_MALE
+        applicant = choice(NAME_MALE) + choice(SECOND_NAME_MALE) + choice(PATRONYMIC_MALE)
     else:
-        applicant = NAME_FEMALE + SECOND_NAME_FEMALE + PATRONYMIC_FEMALE
-    cursor.execute(SQL_QUERY, applicant, choice(position_codes))
+        applicant = choice(NAME_FEMALE) + choice(SECOND_NAME_FEMALE) + choice(PATRONYMIC_FEMALE)
+    position_code = choice(position_codes)
+    cursor.execute(SQL_QUERY, applicant, position_code[0])
 connection.commit()
 
 
@@ -79,7 +82,7 @@ for i in range(AMOUNT_OF_APPLICANTS):
 connection.commit()
 
 
-cursor.execute("SELECT ApplicantCode FROM dbo.ApplicantData")
+cursor.execute("SELECT ApplicantCode FROM dbo.Applicants")
 applicant_codes = cursor.fetchall()
 
 cursor.execute("SELECT EducationCode FROM dbo.EducationData")
@@ -91,7 +94,7 @@ SQL_QUERY = f"INSERT INTO dbo.ApplicantData (ApplicantCode, EducationCode) VALUE
 for i in range(AMOUNT_OF_APPLICANTS):
     applicant_code = choice(applicant_codes)
     education_code = choice(education_codes)
-    cursor.execute(SQL_QUERY, applicant_code, education_code)
+    cursor.execute(SQL_QUERY, applicant_code[0], education_code[0])
 
     applicant_codes.remove(applicant_code)
     education_codes.remove(education_code)
