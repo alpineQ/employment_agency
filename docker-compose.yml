@@ -3,9 +3,19 @@ version: '3'
 
 services:
   sql_server:
-    image: mcr.microsoft.com/mssql/server
+    build: sql_server
+    command: /bin/bash startup.sh
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=QwErTy123!
     ports:
       - 1433:1433
+  web_app:
+    build: web_app
+    restart: always
+    command: python run.py
+    ports:
+    - 80:80
+    depends_on:
+      - sql_server
+

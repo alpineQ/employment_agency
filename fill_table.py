@@ -1,6 +1,19 @@
 """ Скрипт заполнения БД """
 from random import choice
-from app import connection, cursor
+import pyodbc
+
+SERVER = 'localhost'
+DATABASE = 'EmploymentAgencyDB'
+USERNAME = input("Имя пользователя: ")
+PASSWORD = input("Пароль: ")
+
+# pylint: disable=invalid-name
+connection = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
+                            'Server=' + SERVER + ';'
+                            'Database=' + DATABASE + ';'
+                            'uid=' + USERNAME + ';'
+                            'PWD=' + PASSWORD)
+cursor = connection.cursor()
 
 
 AMOUNT_OF_EMPLOYERS = 50

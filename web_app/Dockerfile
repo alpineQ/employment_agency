@@ -1,0 +1,18 @@
+FROM python:3.8.2-alpine
+
+WORKDIR /web_app
+
+RUN apk add gcc
+RUN apk add g++
+RUN apk add unixodbc
+RUN apk add unixodbc-dev
+RUN apk add curl
+
+RUN curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.5.2.2-1_amd64.apk
+RUN apk add --allow-untrusted msodbcsql17_17.5.2.2-1_amd64.apk
+
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .

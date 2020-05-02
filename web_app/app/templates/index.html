@@ -6,9 +6,10 @@
     <title>EmploymentAgencyDB</title>
 </head>
 <body>
+    <h3>EmploymentAgencyDB</h3>
     {% for table_name in urls %}
     <div>
-    <a href="{{urls[table_name]}}">{{table_name}}</a>
+    <a href="{{urls[table_name]['url']}}">{{urls[table_name]['name']}}</a>
     </div>
     {% endfor %}
 </body>
