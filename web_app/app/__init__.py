@@ -1,6 +1,7 @@
 """ Flask сервер работы с EmploymentAgencyDB """
 from flask import Flask
 import pyodbc
+from time import sleep
 from .config import Config
 
 
@@ -8,6 +9,8 @@ from .config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 table_info = app.config['TABLE_INFO']
+
+sleep(35)
 
 connection = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
                             'Server=' + app.config['SERVER'] + ';'

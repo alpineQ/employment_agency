@@ -22,3 +22,5 @@ while request != 'exit':
     cursor.execute(request)
     results = cursor.fetchall()
     print(results)
+
+connection.close()

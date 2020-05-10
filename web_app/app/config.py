@@ -1,6 +1,7 @@
 """ Конфигурация веб приложения """
 
 
+# pylint: disable=too-few-public-methods
 class Config:
     """ Класс конфигурации веб приложения """
     SERVER = 'sql_server'
