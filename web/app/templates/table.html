@@ -14,7 +14,7 @@
         </thead>
         <tbody>
         {% for record in table %}
-        <tr onclick="window.location='/{{ name }}/{{ record[0] }}/'">
+        <tr onclick="window.location='/{{ name }}/{{ record[0] }}/'" class="list-group-item-action">
             {% for field in record[1:] %}
             <td>{{ field }}</td>
             {% endfor %}

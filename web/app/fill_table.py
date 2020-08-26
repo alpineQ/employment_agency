@@ -4,11 +4,12 @@ import logging
 from app import cursor, connection
 
 
-AMOUNT_OF_EMPLOYERS = 50
-VACANCY_PER_EMPLOYER = 10
+AMOUNT_OF_AGENTS = randint(20, 50)
+AMOUNT_OF_APPLICANTS = randint(400, 500)
+AMOUNT_OF_DEALS = randint(200, 400)
+AMOUNT_OF_EMPLOYERS = randint(50, 100)
+VACANCY_PER_EMPLOYER = randint(5, 10)
 AMOUNT_OF_POSITIONS = AMOUNT_OF_EMPLOYERS * VACANCY_PER_EMPLOYER
-AMOUNT_OF_APPLICANTS = 500
-AMOUNT_OF_AGENTS = 50
 
 EMPLOYER_NAMES = ['Facebook', 'Microsoft', 'JetBrains', 'Сбербанк', 'ГазПром', 'Пятерочка',
                   'HP', '1XСтавка', 'Adidas', 'Blizzard', 'Bethesda']
@@ -81,7 +82,7 @@ def fill_vacancies(employer_codes):
     logging.info('Заполнение таблицы "Вакансии"...')
     sql_query = "INSERT INTO Vacancies (EmployerCode, VacancyStatus) VALUES (?,?);"
     for employer_code in employer_codes:
-        for _ in range(VACANCY_PER_EMPLOYER):
+        for _ in range(randint(5, 10)):
             cursor.execute(sql_query, employer_code[0], choice(VACANCY_STATUS))
     connection.commit()
 
@@ -146,13 +147,12 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
     """ Заполнение таблицы "Сделки" """
     logging.info('Заполнение таблицы "Сделки"...')
     sql_query = "INSERT INTO Deals " \
-                "(ApplicantCode, VacancyCode, AgentCode) " \
-                "VALUES (?,?,?);"
-    applicant_code = iter(applicant_codes)
-    vacancy_code = iter(vacancy_codes)
-    for _ in range(AMOUNT_OF_APPLICANTS):
-        cursor.execute(sql_query, next(applicant_code)[0],
-                       next(vacancy_code)[0], choice(agent_codes)[0])
+                "(ApplicantCode, VacancyCode, AgentCode, WasPaid) " \
+                "VALUES (?,?,?,?);"
+    for _ in range(AMOUNT_OF_DEALS):
+        cursor.execute(sql_query, choice(applicant_codes)[0],
+                       choice(vacancy_codes)[0], choice(agent_codes)[0],
+                       choice(['+', '-']))
     connection.commit()
 
 

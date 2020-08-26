@@ -121,7 +121,7 @@ def vacancies():
 def vacancy_info(vacancy_id):
     """ Информация о конкретной вакансии """
     cursor.execute('SELECT * FROM Vacancies WHERE VacancyCode = (?)', vacancy_id)
-    return render_template('table.html', table=cursor.fetchall(), name="vacancy",
+    return render_template('table.html', table=cursor.fetchall(), name="vacancies",
                            fields=app.config['TABLES'][6]['fields'])
 
 
