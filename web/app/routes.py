@@ -14,29 +14,68 @@ def index():
 @app.route('/agents/')
 def agents():
     """ Агенты """
-    result = execute_query('SELECT * FROM dbo.Agents')
-    return str(result)
+    fields = [
+        'Code',
+        'Name'
+        'Second name',
+        'Patronymic',
+        'Phone number',
+        'Email',
+        'Sex'
+    ]
+    result = execute_query('SELECT * FROM Agents')
+    return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/applicants/')
 def applicants():
     """ Соискатели """
-    result = execute_query('SELECT * FROM dbo.Applicants')
-    return str(result)
+    fields = [
+        'Code',
+        'Name',
+        'Second name',
+        'Patronymic',
+        'Application Date',
+        'Qualification',
+        'Birthday',
+        'Sex',
+        'Address',
+        'Phone number',
+        'Job experience',
+        'Email',
+        'Education code',
+        'Position code'
+    ]
+    result = execute_query('SELECT * FROM Applicants')
+    return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/deals/')
 def deals():
     """ Сделки """
-    result = execute_query('SELECT * FROM dbo.Deals')
-    return render_template('table.html', table=result, fields=['Service ID', 'Name', 'Price'])
+    fields = [
+        'Code',
+        'Applicant code',
+        'Vacancy code',
+        'Issue date',
+        'Commission fee',
+        'Was paid?',
+        'Payment date',
+        'Agent code'
+    ]
+    result = execute_query('SELECT * FROM Deals')
+    return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/education/')
 def education():
     """ Образование """
-    result = execute_query('SELECT * FROM dbo.Education')
-    return str(result)
+    fields = ['Code',
+              'Education',
+              'Note',
+              'Institution']
+    result = execute_query('SELECT * FROM Education')
+    return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/employers/')
@@ -48,22 +87,34 @@ def employers():
               'Phone number',
               'Email',
               'License']
-    result = execute_query('SELECT * FROM dbo.Employers')
+    result = execute_query('SELECT * FROM Employers')
     return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/positions/')
 def positions():
     """ Должности """
-    result = execute_query('SELECT * FROM dbo.Positions')
-    return str(result)
+    fields = ['Code',
+              'Position',
+              'Industry']
+    result = execute_query('SELECT * FROM Positions')
+    return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/vacancies/')
 def vacancies():
     """ Вакансии """
-    result = execute_query('SELECT * FROM dbo.Vacancies')
-    return str(result)
+    fields = ['Code',
+              'Date',
+              'Salary',
+              'Schedule',
+              'VacancyStatus',
+              'Industry',
+              'RequiredEducation',
+              'Qualification',
+              'EmployerCode']
+    result = execute_query('SELECT * FROM Vacancies')
+    return render_template('table.html', table=result, fields=fields)
 
 
 @app.route('/fill_db/', methods=['POST'])

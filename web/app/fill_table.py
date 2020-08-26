@@ -1,5 +1,6 @@
 """ Скрипт заполнения БД """
 from random import choice
+import logging
 from app import cursor, connection
 
 # pylint: disable=invalid-name
@@ -36,27 +37,24 @@ def fill_db():
     fill_employers()
     fill_positions()
 
-    cursor.execute("SELECT PositionCode FROM dbo.Positions")
+    cursor.execute("SELECT PositionCode FROM Positions")
     position_codes = cursor.fetchall()
-    cursor.execute("SELECT EmployerCode FROM dbo.Employers")
+    cursor.execute("SELECT EmployerCode FROM Employers")
     employer_codes = cursor.fetchall()
 
     fill_vacancies(employer_codes)
-    fill_applicants(position_codes)
     fill_education()
 
-    cursor.execute("SELECT ApplicantCode FROM dbo.Applicants")
-    applicant_codes = cursor.fetchall()
-    cursor.execute("SELECT EducationCode FROM dbo.EducationData")
+    cursor.execute("SELECT EducationCode FROM Education")
     education_codes = cursor.fetchall()
 
-    fill_applicant_data(applicant_codes, education_codes)
+    fill_applicants(position_codes, education_codes)
 
 
 def fill_employers():
     """ Заполнение таблицы "Работодатели" """
-    print('Заполнение таблицы "Работодатели"...')
-    sql_query = "INSERT INTO dbo.Employers (EmployerOrganization) VALUES (?);"
+    logging.info('Заполнение таблицы "Работодатели"...')
+    sql_query = "INSERT INTO Employers (EmployerOrganization) VALUES (?);"
     for _ in range(AMOUNT_OF_EMPLOYERS):
         employer = choice(EMPLOYER_NAMES) + choice(EMPLOYER_ENDINGS)
         cursor.execute(sql_query, employer)
@@ -65,8 +63,8 @@ def fill_employers():
 
 def fill_positions():
     """ Заполнение таблицы "Должности" """
-    print('Заполнение таблицы "Должности"...')
-    sql_query = "INSERT INTO dbo.Positions (PositionName) VALUES (?);"
+    logging.info('Заполнение таблицы "Должности"...')
+    sql_query = "INSERT INTO Positions (PositionName) VALUES (?);"
     for _ in range(AMOUNT_OF_POSITIONS):
         position = choice(POSITION) + choice(POSITION_ENDING)
         cursor.execute(sql_query, position)
@@ -75,47 +73,41 @@ def fill_positions():
 
 def fill_vacancies(employer_codes):
     """ Заполнение таблицы "Вакансии" """
-    print('Заполнение таблицы "Вакансии"...')
-    sql_query = "INSERT INTO dbo.Vacancies (EmployerCode, VacancyStatus) VALUES (?,?,?);"
+    logging.info('Заполнение таблицы "Вакансии"...')
+    sql_query = "INSERT INTO Vacancies (EmployerCode, VacancyStatus) VALUES (?,?);"
     for employer_code in employer_codes:
         for _ in range(VACANCY_PER_EMPLOYER):
             cursor.execute(sql_query, employer_code[0], choice(VACANCY_STATUS))
     connection.commit()
 
 
-def fill_applicants(position_codes):
-    """ Заполнение таблицы "Соискатели" """
-    print('Заполнение таблицы "Соискатели"...')
-    sql_query = "INSERT INTO dbo.Applicants (ApplicantFullName, PositionCode) VALUES (?,?);"
-    for _ in range(AMOUNT_OF_APPLICANTS):
-        if choice(['male', 'female']) == 'male':
-            applicant = choice(NAME_MALE) + choice(SECOND_NAME_MALE) + choice(PATRONYMIC_MALE)
-        else:
-            applicant = choice(NAME_FEMALE) + choice(SECOND_NAME_FEMALE) + choice(PATRONYMIC_FEMALE)
-        position_code = choice(position_codes)
-        cursor.execute(sql_query, applicant, position_code[0])
-    connection.commit()
-
-
 def fill_education():
     """ Заполнение таблицы "Образование" """
-    print('Заполнение таблицы "Образование"...')
-    sql_query = "INSERT INTO dbo.EducationData (Education) VALUES (?);"
+    logging.info('Заполнение таблицы "Образование"...')
+    sql_query = "INSERT INTO Education (Education) VALUES (?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
         education = choice(EDUCATION_DEGREE) + ' образование в области ' + choice(EDUCATION_SPHERE)
         cursor.execute(sql_query, education)
     connection.commit()
 
 
-def fill_applicant_data(applicant_codes, education_codes):
-    """ Заполнение таблицы "Данные соискателей" """
-    print('Заполнение таблицы "Данные Соискателей"...')
-    sql_query = "INSERT INTO dbo.ApplicantData (ApplicantCode, EducationCode) VALUES (?,?);"
+def fill_applicants(position_codes, education_codes):
+    """ Заполнение таблицы "Соискатели" """
+    logging.info('Заполнение таблицы "Соискатели"...')
+    sql_query = "INSERT INTO Applicants " \
+                "(Name, SecondName, Patronymic, PositionCode, EducationCode)" \
+                " VALUES (?,?,?,?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
-        applicant_code = choice(applicant_codes)
+        if choice(['male', 'female']) == 'male':
+            name = choice(NAME_MALE)
+            second_name = choice(SECOND_NAME_MALE)
+            patronymic = choice(PATRONYMIC_MALE)
+        else:
+            name = choice(NAME_FEMALE)
+            second_name = choice(SECOND_NAME_FEMALE)
+            patronymic = choice(PATRONYMIC_FEMALE)
+        position_code = choice(position_codes)
         education_code = choice(education_codes)
-        cursor.execute(sql_query, applicant_code[0], education_code[0])
-
-        applicant_codes.remove(applicant_code)
-        education_codes.remove(education_code)
+        cursor.execute(sql_query, name, second_name, patronymic,
+                       position_code[0], education_code[0])
     connection.commit()
