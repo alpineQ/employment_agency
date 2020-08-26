@@ -60,12 +60,12 @@ go
 CREATE TABLE Deals
 (
 	DealCode uniqueidentifier  NOT NULL ,
-	ApplicantCode uniqueidentifier  NOT NULL ,
-	VacancyCode uniqueidentifier  NOT NULL ,
 	IssueDate datetime  NULL ,
 	CommissionFee integer  NULL ,
 	WasPaid char(1)  NULL ,
 	PaymentDate datetime  NULL ,
+	ApplicantCode uniqueidentifier  NOT NULL ,
+	VacancyCode uniqueidentifier  NOT NULL ,
 	AgentCode uniqueidentifier  NOT NULL
 )
 go

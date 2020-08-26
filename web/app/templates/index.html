@@ -2,7 +2,16 @@
 
 {% block content %}
 
-<h1>Employment Agency</h1>
+<div class="row">
+    <div class="col-sm-8">
+        <h1>Employment Agency</h1>
+    </div>
+    <div class="col-sm-4">
+        <form action="/fill_db/" method="post">
+            <button class="btn btn-lg btn-primary" name="fill_db_button" value="fill">Generate data</button>
+        </form>
+    </div>
+</div>
 
 <div class="list-group">
     {% for table in tables %}
@@ -16,8 +25,5 @@
     {% endfor %}
 </div>
 
-<form action="/fill_db/" method="post">
-    <button class="btn btn-lg btn-primary" name="fill_db_button" value="fill">Generate data</button>
-</form>
 
 {% endblock %}
