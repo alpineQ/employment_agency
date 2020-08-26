@@ -1,0 +1,45 @@
+{
+  "SERVER": "sql_server",
+  "DATABASE": "EmploymentAgencyDB",
+  "PASSWORD": "QwErTy123!",
+  "USERNAME": "SA",
+  "RETRIES_NUM": 5,
+  "RETRIES_TIMEOUT": 10,
+  "TABLES": [
+    {
+      "name": "Должности",
+      "db": "dbo.Positions",
+      "url": "/positions/"
+    },
+    {
+      "name": "Работодатели",
+      "db": "dbo.Employers",
+      "url": "/employers/"
+    },
+    {
+      "name": "Соискатели",
+      "db": "dbo.Applicants",
+      "url": "/applicants/"
+    },
+    {
+      "name": "Образование",
+      "db": "dbo.Education",
+      "url": "/education/"
+    },
+    {
+      "name": "Агенты",
+      "db": "dbo.Agents",
+      "url": "/agents/"
+    },
+    {
+      "name": "Вакансии",
+      "db": "dbo.Vacancies",
+      "url": "/vacancies/"
+    },
+    {
+      "name": "Сделки",
+      "db": "dbo.Deals",
+      "url": "/deals/"
+    }
+  ]
+}

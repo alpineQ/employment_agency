@@ -1,6 +1,4 @@
-version: '3'
-
-
+version: '3.5'
 services:
   sql_server:
     build: sql_server
@@ -8,14 +6,11 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=QwErTy123!
-    ports:
-      - 1433:1433
-  web_app:
-    build: web_app
-    restart: always
+  web:
+    build: web
     command: python run.py
     ports:
-    - 80:80
+    - 5000:5000
     depends_on:
       - sql_server
 

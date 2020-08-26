@@ -39,7 +39,7 @@ CREATE TABLE Applicants
 	JobExperience nvarchar(120)  NULL ,
 	Email varchar(20)  NULL ,
 	EducationCode uniqueidentifier  NOT NULL ,
-	PositionCode char(18)  NOT NULL 
+	PositionCode uniqueidentifier  NOT NULL
 )
 go
 
@@ -122,8 +122,8 @@ go
 
 CREATE TABLE Positions
 (
-	PositionCode char(18)  NOT NULL ,
-	PositionName varchar(20)  NULL ,
+	PositionCode uniqueidentifier  NOT NULL ,
+	PositionName nvarchar(60)  NULL ,
 	Industry varchar(20)  NULL 
 )
 go
