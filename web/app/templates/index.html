@@ -3,7 +3,8 @@
 {% block content %}
 
 <div class="d-flex justify-content-between">
-    <h1>Employment Agency</h1>
+
+    <h1><i class="fa fa-suitcase"></i> Employment Agency</h1>
     <form action="/fill_db/" method="post">
         <button class="btn btn-lg btn-primary" name="fill_db_button" value="fill">Generate data</button>
     </form>
@@ -20,5 +21,8 @@
     {% endfor %}
 </div>
 
+<span class="fas fa-wrench"></span>
+<span class="fas fa-wifi"></span>
+<span class="fas fa-bug"></span>
 
 {% endblock %}
