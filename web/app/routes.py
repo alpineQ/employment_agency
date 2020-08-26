@@ -7,6 +7,9 @@ from app import app, cursor
 @app.route('/')
 def index():
     """ Список всех таблиц БД """
+    for table in app.config['TABLES']:
+        cursor.execute(f"SELECT COUNT(*) FROM {table['db']}")
+        table['n_records'] = cursor.fetchone()[0]
     return render_template('index.html', tables=app.config['TABLES'])
 
 

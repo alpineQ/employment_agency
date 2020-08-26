@@ -1,5 +1,5 @@
 """ Скрипт заполнения БД """
-from random import choice
+from random import choice, randint
 import logging
 from app import cursor, connection
 
@@ -100,8 +100,8 @@ def fill_applicants(position_codes, education_codes):
     """ Заполнение таблицы "Соискатели" """
     logging.info('Заполнение таблицы "Соискатели"...')
     sql_query = "INSERT INTO Applicants " \
-                "(Name, SecondName, Patronymic, Sex, PositionCode, EducationCode)" \
-                " VALUES (?,?,?,?,?,?);"
+                "(Name, SecondName, Patronymic, Sex, PhoneNumber, PositionCode, EducationCode)" \
+                " VALUES (?,?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
         if choice([True, False]):
             name = choice(NAME_MALE)
@@ -116,7 +116,7 @@ def fill_applicants(position_codes, education_codes):
         position_code = choice(position_codes)
         education_code = choice(education_codes)
         cursor.execute(sql_query, name, second_name, patronymic, sex,
-                       position_code[0], education_code[0])
+                       generate_phone_number(), position_code[0], education_code[0])
     connection.commit()
 
 
@@ -124,8 +124,8 @@ def fill_agents():
     """ Заполнение таблицы "Агенты" """
     logging.info('Заполнение таблицы "Агенты"...')
     sql_query = "INSERT INTO Agents " \
-                "(Name, SecondName, Patronymic, Sex) " \
-                "VALUES (?,?,?,?);"
+                "(Name, SecondName, Patronymic, Sex, PhoneNumber) " \
+                "VALUES (?,?,?,?,?);"
     for _ in range(AMOUNT_OF_AGENTS):
         if choice([True, False]):
             name = choice(NAME_MALE)
@@ -137,7 +137,8 @@ def fill_agents():
             second_name = choice(SECOND_NAME_FEMALE)
             patronymic = choice(PATRONYMIC_FEMALE)
             sex = 'Ж'
-        cursor.execute(sql_query, name, second_name, patronymic, sex)
+        cursor.execute(sql_query, name, second_name, patronymic, sex,
+                       generate_phone_number())
     connection.commit()
 
 
@@ -153,3 +154,8 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
         cursor.execute(sql_query, next(applicant_code)[0],
                        next(vacancy_code)[0], choice(agent_codes)[0])
     connection.commit()
+
+
+def generate_phone_number():
+    """ Генерация номера телефона """
+    return f'+7({randint(900, 999)}){randint(100, 999)}-{randint(10, 99)}-{randint(10, 99)}'

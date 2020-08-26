@@ -8,7 +8,7 @@ CREATE TABLE Agents
 	Name nvarchar(20)  NULL ,
 	SecondName nvarchar(20)  NULL ,
 	Patronymic nvarchar(20)  NULL ,
-	PhoneNumber integer  NULL ,
+	PhoneNumber char(16)  NULL ,
 	Email char(18)  NULL ,
 	Sex nchar(1)  NULL
 )
@@ -35,7 +35,7 @@ CREATE TABLE Applicants
 	Birthday datetime  NULL ,
 	Sex nchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
-	PhoneNumber int  NULL ,
+	PhoneNumber char(16)  NULL ,
 	JobExperience nvarchar(120)  NULL ,
 	Email varchar(20)  NULL ,
 	EducationCode uniqueidentifier  NOT NULL ,

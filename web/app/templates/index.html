@@ -2,26 +2,21 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="col-sm-8">
-        <h1>Employment Agency</h1>
-    </div>
-    <div class="col-sm-4">
-        <form action="/fill_db/" method="post">
-            <button class="btn btn-lg btn-primary" name="fill_db_button" value="fill">Generate data</button>
-        </form>
-    </div>
+<div class="d-flex justify-content-between">
+    <h1>Employment Agency</h1>
+    <form action="/fill_db/" method="post">
+        <button class="btn btn-lg btn-primary" name="fill_db_button" value="fill">Generate data</button>
+    </form>
 </div>
 
 <div class="list-group">
     {% for table in tables %}
-
     <a href="{{ table['url'] }}" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex justify-content-between">
             <h4 class="mb-1">{{ table['name'] }}</h4>
+            <h5><span class="badge badge-primary badge-pill">{{ table['n_records'] }}</span></h5>
         </div>
     </a>
-
     {% endfor %}
 </div>
 
