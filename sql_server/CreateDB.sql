@@ -33,7 +33,7 @@ CREATE TABLE Applicants
 	ApplicationDate datetime  NULL ,
 	Qualification varchar(20)  NULL ,
 	Birthday datetime  NULL ,
-	Sex varchar(20)  NULL ,
+	Sex nvarchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
 	PhoneNumber int  NULL ,
 	JobExperience nvarchar(120)  NULL ,

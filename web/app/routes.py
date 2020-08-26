@@ -14,107 +14,57 @@ def index():
 @app.route('/agents/')
 def agents():
     """ Агенты """
-    fields = [
-        'Code',
-        'Name'
-        'Second name',
-        'Patronymic',
-        'Phone number',
-        'Email',
-        'Sex'
-    ]
     result = execute_query('SELECT * FROM Agents')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="agents",
+                           fields=app.config['TABLES'][0]['fields'])
 
 
 @app.route('/applicants/')
 def applicants():
     """ Соискатели """
-    fields = [
-        'Code',
-        'Name',
-        'Second name',
-        'Patronymic',
-        'Application Date',
-        'Qualification',
-        'Birthday',
-        'Sex',
-        'Address',
-        'Phone number',
-        'Job experience',
-        'Email',
-        'Education code',
-        'Position code'
-    ]
     result = execute_query('SELECT * FROM Applicants')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="applicants",
+                           fields=app.config['TABLES'][1]['fields'])
 
 
 @app.route('/deals/')
 def deals():
     """ Сделки """
-    fields = [
-        'Code',
-        'Applicant code',
-        'Vacancy code',
-        'Issue date',
-        'Commission fee',
-        'Was paid?',
-        'Payment date',
-        'Agent code'
-    ]
     result = execute_query('SELECT * FROM Deals')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="deals",
+                           fields=app.config['TABLES'][2]['fields'])
 
 
 @app.route('/education/')
 def education():
     """ Образование """
-    fields = ['Code',
-              'Education',
-              'Note',
-              'Institution']
     result = execute_query('SELECT * FROM Education')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="education",
+                           fields=app.config['TABLES'][3]['fields'])
 
 
 @app.route('/employers/')
 def employers():
     """ Работодатели """
-    fields = ['Employer ID',
-              'Organization',
-              'Address',
-              'Phone number',
-              'Email',
-              'License']
     result = execute_query('SELECT * FROM Employers')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="employers",
+                           fields=app.config['TABLES'][4]['fields'])
 
 
 @app.route('/positions/')
 def positions():
     """ Должности """
-    fields = ['Code',
-              'Position',
-              'Industry']
     result = execute_query('SELECT * FROM Positions')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="positions",
+                           fields=app.config['TABLES'][5]['fields'])
 
 
 @app.route('/vacancies/')
 def vacancies():
     """ Вакансии """
-    fields = ['Code',
-              'Date',
-              'Salary',
-              'Schedule',
-              'VacancyStatus',
-              'Industry',
-              'RequiredEducation',
-              'Qualification',
-              'EmployerCode']
     result = execute_query('SELECT * FROM Vacancies')
-    return render_template('table.html', table=result, fields=fields)
+    return render_template('table.html', table=result, name="vacancies",
+                           fields=app.config['TABLES'][6]['fields'])
 
 
 @app.route('/fill_db/', methods=['POST'])

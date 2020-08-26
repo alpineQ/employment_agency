@@ -19,14 +19,13 @@ VACANCY_STATUS = ['Свободна', 'Занята']
 
 POSITION = ['Дворник', 'Программист', 'Начальник отдела', 'Секретарь', 'Бухгалтер',
             'Охранник', 'Помощник регионального менеджера']
-POSITION_ENDING = [' на полставки', '-грузчик', ' стажер', '', '', '', '', '']
 
 NAME_MALE = ['Григорий', 'Андрей', 'Сергей', 'Михаил', 'Владимир']
 NAME_FEMALE = ['Татьяна', 'Маргарита', 'Анастасия', 'Екатерина', 'Анна']
-SECOND_NAME_MALE = [' Рогов', ' Минин', ' Смирнов', ' Ковпак', ' Новосёлов']
-SECOND_NAME_FEMALE = [' Симонова', ' Андреева', ' Скоршева', ' Мальцева', ' Кобелева']
-PATRONYMIC_MALE = [' Иванович', ' Андреевич', ' Юрьевич', ' Семенович', ' Дмитриевич']
-PATRONYMIC_FEMALE = [' Андреевна', ' Семёновна', ' Сергеевна', ' Дмитриевна', ' Ивановна']
+SECOND_NAME_MALE = ['Вихров', 'Минин', 'Смирнов', 'Шувалов', 'Рязанцев', 'Балабанов', 'Клюквин']
+SECOND_NAME_FEMALE = ['Симонова', 'Андреева', 'Скоршева', 'Мальцева', 'Гришечкина', 'Синицина']
+PATRONYMIC_MALE = ['Иванович', 'Андреевич', 'Юрьевич', 'Семенович', 'Дмитриевич']
+PATRONYMIC_FEMALE = ['Андреевна', 'Семёновна', 'Сергеевна', 'Дмитриевна', 'Ивановна']
 
 EDUCATION_DEGREE = ['Высшее', 'Среднее', 'Начальное', 'Базовое']
 EDUCATION_SPHERE = ['экономики', 'программирования', 'администрирования', 'дизайна']
@@ -66,7 +65,7 @@ def fill_positions():
     logging.info('Заполнение таблицы "Должности"...')
     sql_query = "INSERT INTO Positions (PositionName) VALUES (?);"
     for _ in range(AMOUNT_OF_POSITIONS):
-        position = choice(POSITION) + choice(POSITION_ENDING)
+        position = choice(POSITION)
         cursor.execute(sql_query, position)
     connection.commit()
 
@@ -95,19 +94,21 @@ def fill_applicants(position_codes, education_codes):
     """ Заполнение таблицы "Соискатели" """
     logging.info('Заполнение таблицы "Соискатели"...')
     sql_query = "INSERT INTO Applicants " \
-                "(Name, SecondName, Patronymic, PositionCode, EducationCode)" \
-                " VALUES (?,?,?,?,?);"
+                "(Name, SecondName, Patronymic, Sex, PositionCode, EducationCode)" \
+                " VALUES (?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
-        if choice(['male', 'female']) == 'male':
+        if choice([True, False]):
             name = choice(NAME_MALE)
             second_name = choice(SECOND_NAME_MALE)
             patronymic = choice(PATRONYMIC_MALE)
+            sex = 'М'
         else:
             name = choice(NAME_FEMALE)
             second_name = choice(SECOND_NAME_FEMALE)
             patronymic = choice(PATRONYMIC_FEMALE)
+            sex = 'Ж'
         position_code = choice(position_codes)
         education_code = choice(education_codes)
-        cursor.execute(sql_query, name, second_name, patronymic,
+        cursor.execute(sql_query, name, second_name, patronymic, sex,
                        position_code[0], education_code[0])
     connection.commit()
