@@ -4,13 +4,13 @@ USE EmploymentAgencyDB
 
 CREATE TABLE Agents
 (
-	AgentCode char(18)  NOT NULL ,
-	Name varchar(20)  NULL ,
-	SecondName varchar(20)  NULL ,
-	Patronymic varchar(20)  NULL ,
+	AgentCode uniqueidentifier  NOT NULL ,
+	Name nvarchar(20)  NULL ,
+	SecondName nvarchar(20)  NULL ,
+	Patronymic nvarchar(20)  NULL ,
 	PhoneNumber integer  NULL ,
 	Email char(18)  NULL ,
-	Sex char(18)  NULL 
+	Sex nchar(1)  NULL
 )
 go
 
@@ -33,7 +33,7 @@ CREATE TABLE Applicants
 	ApplicationDate datetime  NULL ,
 	Qualification varchar(20)  NULL ,
 	Birthday datetime  NULL ,
-	Sex nvarchar(1)  NOT NULL ,
+	Sex nchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
 	PhoneNumber int  NULL ,
 	JobExperience nvarchar(120)  NULL ,
@@ -59,14 +59,14 @@ go
 
 CREATE TABLE Deals
 (
-	DealCode char(18)  NOT NULL ,
+	DealCode uniqueidentifier  NOT NULL ,
 	ApplicantCode uniqueidentifier  NOT NULL ,
 	VacancyCode uniqueidentifier  NOT NULL ,
 	IssueDate datetime  NULL ,
 	CommissionFee integer  NULL ,
-	WasPaid char(18)  NULL ,
+	WasPaid char(1)  NULL ,
 	PaymentDate datetime  NULL ,
-	AgentCode char(18)  NOT NULL 
+	AgentCode uniqueidentifier  NOT NULL
 )
 go
 
