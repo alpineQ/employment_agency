@@ -1,11 +1,13 @@
 version: '3.5'
 services:
   sql_server:
-    build: sql_server
-    command: /bin/bash startup.sh
+    image: mcr.microsoft.com/mssql/server
+    command: /bin/bash /usr/src/app/startup.sh
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=QwErTy123!
+    volumes:
+    - ./sql_server:/usr/src/app
   web:
     build: web
     command: python run.py

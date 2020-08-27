@@ -9,6 +9,7 @@
     {
       "name": "Агенты",
       "db": "Agents",
+      "key": "AgentCode",
       "url": "/agents/",
       "fields": [
         "ID",
@@ -24,6 +25,7 @@
     {
       "name": "Соискатели",
       "db": "Applicants",
+      "key": "ApplicantCode",
       "url": "/applicants/",
       "fields": [
         "ID",
@@ -47,6 +49,7 @@
       "name": "Сделки",
       "db": "Deals",
       "url": "/deals/",
+      "key": "DealCode",
       "fields": [
         "ID",
         "Дата",
@@ -62,6 +65,7 @@
     {
       "name": "Образование",
       "db": "Education",
+      "key": "EducationCode",
       "url": "/education/",
       "fields": [
         "ID",
@@ -74,6 +78,7 @@
     {
       "name": "Работодатели",
       "db": "Employers",
+      "key": "EmployerCode",
       "url": "/employers/",
       "fields": [
         "ID",
@@ -88,6 +93,7 @@
     {
       "name": "Должности",
       "db": "Positions",
+      "key": "PositionCode",
       "url": "/positions/",
       "fields": [
         "ID",
@@ -99,6 +105,7 @@
     {
       "name": "Вакансии",
       "db": "Vacancies",
+      "key": "VacancyCode",
       "url": "/vacancies/",
       "fields": [
         "ID",

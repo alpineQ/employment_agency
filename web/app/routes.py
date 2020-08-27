@@ -1,5 +1,6 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
-from flask import render_template, redirect
+import logging
+from flask import render_template, redirect, request
 from app.fill_table import fill_db
 from app import app, cursor
 
@@ -14,119 +15,52 @@ def index():
 
 
 @app.route('/agents/')
-def agents():
-    """ Агенты """
-    cursor.execute('SELECT * FROM Agents')
-    return render_template('table.html', table=cursor.fetchall(), name="agents",
-                           fields=app.config['TABLES'][0]['fields'])
-
-
-@app.route('/agents/<agent_id>/')
-def agent_info(agent_id):
-    """ Информация о конкретном агенте """
-    cursor.execute('SELECT * FROM Agents WHERE AgentCode = (?)', agent_id)
-    return render_template('table.html', table=cursor.fetchall(), name="agents",
-                           fields=app.config['TABLES'][0]['fields'])
-
-
 @app.route('/applicants/')
-def applicants():
-    """ Соискатели """
-    cursor.execute('SELECT * FROM Applicants')
-    return render_template('table.html', table=cursor.fetchall(), name="applicants",
-                           fields=app.config['TABLES'][1]['fields'])
-
-
-@app.route('/applicants/<applicant_id>/')
-def applicant_info(applicant_id):
-    """ Информация о конкретном соискателе """
-    cursor.execute('SELECT * FROM Applicants WHERE ApplicantCode = (?)', applicant_id)
-    return render_template('table.html', table=cursor.fetchall(), name="applicants",
-                           fields=app.config['TABLES'][1]['fields'])
-
-
 @app.route('/deals/')
-def deals():
-    """ Сделки """
-    cursor.execute('SELECT * FROM Deals')
-    return render_template('table.html', table=cursor.fetchall(), name="deals",
-                           fields=app.config['TABLES'][2]['fields'])
-
-
-@app.route('/deals/<deal_id>/')
-def deal_info(deal_id):
-    """ Информация о конкретной сделке """
-    cursor.execute('SELECT * FROM Deals WHERE DealCode = (?)', deal_id)
-    return render_template('table.html', table=cursor.fetchall(), name="deals",
-                           fields=app.config['TABLES'][2]['fields'])
-
-
 @app.route('/education/')
-def education():
-    """ Образование """
-    cursor.execute('SELECT * FROM Education')
-    return render_template('table.html', table=cursor.fetchall(), name="education",
-                           fields=app.config['TABLES'][3]['fields'])
-
-
-@app.route('/education/<education_id>/')
-def education_info(education_id):
-    """ Информация о конкретном образовании """
-    cursor.execute('SELECT * FROM Education WHERE EducationCode = (?)', education_id)
-    return render_template('table.html', table=cursor.fetchall(), name="education",
-                           fields=app.config['TABLES'][3]['fields'])
-
-
 @app.route('/employers/')
-def employers():
-    """ Работодатели """
-    cursor.execute('SELECT * FROM Employers')
-    return render_template('table.html', table=cursor.fetchall(), name="employers",
-                           fields=app.config['TABLES'][4]['fields'])
-
-
-@app.route('/employers/<employers_id>/')
-def employers_info(employers_id):
-    """ Информация о конкретном работодателе """
-    cursor.execute('SELECT * FROM Employers WHERE EmployerCode = (?)', employers_id)
-    return render_template('table.html', table=cursor.fetchall(), name="employers",
-                           fields=app.config['TABLES'][4]['fields'])
-
-
 @app.route('/positions/')
-def positions():
-    """ Должности """
-    cursor.execute('SELECT * FROM Positions')
-    return render_template('table.html', table=cursor.fetchall(), name="positions",
-                           fields=app.config['TABLES'][5]['fields'])
-
-
-@app.route('/positions/<positions_id>/')
-def positions_info(positions_id):
-    """ Информация о конкретной должности """
-    cursor.execute('SELECT * FROM Positions WHERE PositionCode = (?)', positions_id)
-    return render_template('table.html', table=cursor.fetchall(), name="positions",
-                           fields=app.config['TABLES'][5]['fields'])
-
-
 @app.route('/vacancies/')
-def vacancies():
-    """ Вакансии """
-    cursor.execute('SELECT * FROM Vacancies')
-    return render_template('table.html', table=cursor.fetchall(), name="vacancies",
-                           fields=app.config['TABLES'][6]['fields'])
+def table_route():
+    """ Данные таблиц """
+    table_info = [table for table in app.config['TABLES'] if table['url'] == request.path][0]
+    cursor.execute(f"SELECT * FROM {table_info['db']}")
+    table_data = cursor.fetchall()
+    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{table_info['db']}'")
+    types = cursor.fetchall()
+    return render_template('table.html', table=table_data, table_info=table_info, types=types)
 
 
-@app.route('/vacancies/<vacancy_id>/')
-def vacancy_info(vacancy_id):
-    """ Информация о конкретной вакансии """
-    cursor.execute('SELECT * FROM Vacancies WHERE VacancyCode = (?)', vacancy_id)
-    return render_template('table.html', table=cursor.fetchall(), name="vacancies",
-                           fields=app.config['TABLES'][6]['fields'])
+@app.route('/agents/<note_id>/')
+@app.route('/applicants/<note_id>/')
+@app.route('/deals/<note_id>/')
+@app.route('/education/<note_id>/')
+@app.route('/employers/<note_id>/')
+@app.route('/positions/<note_id>/')
+@app.route('/vacancies/<note_id>/')
+def note_info(note_id):
+    """ Информация о конкретной записи """
+    table_name = request.path[:request.path.find('/', 1)+1]
+    table_info = [table for table in app.config['TABLES'] if table['url'] == table_name][0]
+    cursor.execute(f"SELECT * FROM {table_info['db']} WHERE {table_info['key']} = (?)", note_id)
+    table_data = cursor.fetchall()
+    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{table_info['db']}'")
+    types = cursor.fetchall()
+    return render_template('table.html', table=table_data, table_info=table_info, types=types)
 
 
 @app.route('/fill_db/', methods=['POST'])
 def generate_data():
     """ Заполнение БД данными """
     fill_db()
+    return redirect('/')
+
+
+@app.route('/clear_db/', methods=['POST'])
+def delete_all_data():
+    """ Заполнение БД данными """
+    cursor.execute("DROP DATABASE EmploymentAgencyDB")
+    logging.info(cursor.fetchall())
     return redirect('/')

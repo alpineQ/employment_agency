@@ -104,7 +104,7 @@ CREATE TABLE Employers
 	EmployerCode uniqueidentifier  NOT NULL ,
 	EmployerOrganization nvarchar(60)  NOT NULL ,
 	OrganizationAddress nvarchar(120)  NULL ,
-	PhoneNumber int  NULL ,
+	PhoneNumber char(16)  NULL ,
 	Email varchar(40)  NULL ,
 	License varchar(20)  NULL 
 )

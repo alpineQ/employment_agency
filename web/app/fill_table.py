@@ -1,6 +1,7 @@
 """ Скрипт заполнения БД """
-from random import choice, randint
+from random import choice, randint, randrange
 from string import digits, ascii_lowercase
+from datetime import date, timedelta
 import logging
 from app import cursor, connection
 
@@ -60,10 +61,12 @@ def fill_db():
 def fill_employers():
     """ Заполнение таблицы "Работодатели" """
     logging.info('Заполнение таблицы "Работодатели"...')
-    sql_query = "INSERT INTO Employers (EmployerOrganization, Email) VALUES (?,?);"
+    sql_query = "INSERT INTO Employers " \
+                "(EmployerOrganization, Email, PhoneNumber) " \
+                "VALUES (?,?,?);"
     for _ in range(AMOUNT_OF_EMPLOYERS):
         employer = choice(EMPLOYER_NAMES) + choice(EMPLOYER_ENDINGS)
-        cursor.execute(sql_query, employer, generate_email())
+        cursor.execute(sql_query, employer, generate_email(), generate_phone_number())
     connection.commit()
 
 
@@ -148,12 +151,12 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
     """ Заполнение таблицы "Сделки" """
     logging.info('Заполнение таблицы "Сделки"...')
     sql_query = "INSERT INTO Deals " \
-                "(ApplicantCode, VacancyCode, AgentCode, WasPaid) " \
-                "VALUES (?,?,?,?);"
+                "(ApplicantCode, VacancyCode, AgentCode, WasPaid, IssueDate) " \
+                "VALUES (?,?,?,?,?);"
     for _ in range(AMOUNT_OF_DEALS):
         cursor.execute(sql_query, choice(applicant_codes)[0],
-                       choice(vacancy_codes)[0], choice(agent_codes)[0],
-                       choice(['+', '-']))
+                       choice(vacancy_codes)[0], choice(agent_codes)[0], choice(['+', '-']),
+                       generate_date(date(2000, 1, 1), date(2020, 1, 1)))
     connection.commit()
 
 
@@ -172,3 +175,8 @@ def generate_email():
     username = ''.join(choice(ascii_lowercase + digits) for _ in range(randint(1, 20)))
 
     return f'{username}@{domain}.{ext}'
+
+
+def generate_date(start_date, end_date):
+    """ Генерация случайной даты """
+    return start_date + timedelta(days=randrange((end_date - start_date).days))

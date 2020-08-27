@@ -7,14 +7,14 @@
     <table class="table">
         <thead>
         <tr>
-            {% for field in fields[1:] %}
+            {% for field in table_info['fields'][1:] %}
             <th scope="col">{{ field }}</th>
             {% endfor %}
         </tr>
         </thead>
         <tbody>
         {% for record in table %}
-        <tr onclick="window.location='/{{ name }}/{{ record[0] }}/'" class="list-group-item-action">
+        <tr onclick="window.location='{{ table_info['url'] }}{{ record[0] }}/'" class="list-group-item-action">
             {% for field in record[1:] %}
             <td>{{ field }}</td>
             {% endfor %}
