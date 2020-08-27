@@ -4,8 +4,10 @@ import logging
 from time import sleep
 from flask import Flask
 import pyodbc
+# pylint: disable=c-extension-no-member
+# pylint: disable=logging-fstring-interpolation
 
-# pylint: disable=invalid-name
+
 app = Flask(__name__)
 app.config.from_json('config.json')
 
@@ -25,7 +27,6 @@ for i in range(app.config['RETRIES_NUM']):
         if i == app.config['RETRIES_NUM'] - 1:
             logging.error('Exceeded amount of retries. Shutting down...')
             sys.exit(-1)
-        # pylint: disable=logging-fstring-interpolation
         logging.warning(f"DB is launching... Retry in {app.config['RETRIES_TIMEOUT']}[{i}]")
         sleep(app.config['RETRIES_TIMEOUT'])
 logging.info("Successfully connected to db")
@@ -33,4 +34,5 @@ logging.info("Successfully connected to db")
 cursor = connection.cursor()
 
 # pylint: disable=wrong-import-position
+# pylint: disable=cyclic-import
 from . import routes

@@ -1,8 +1,8 @@
 """ Скрипт заполнения БД """
 from random import choice, randint
+from string import digits, ascii_lowercase
 import logging
 from app import cursor, connection
-
 
 AMOUNT_OF_AGENTS = randint(20, 50)
 AMOUNT_OF_APPLICANTS = randint(400, 500)
@@ -60,10 +60,10 @@ def fill_db():
 def fill_employers():
     """ Заполнение таблицы "Работодатели" """
     logging.info('Заполнение таблицы "Работодатели"...')
-    sql_query = "INSERT INTO Employers (EmployerOrganization) VALUES (?);"
+    sql_query = "INSERT INTO Employers (EmployerOrganization, Email) VALUES (?,?);"
     for _ in range(AMOUNT_OF_EMPLOYERS):
         employer = choice(EMPLOYER_NAMES) + choice(EMPLOYER_ENDINGS)
-        cursor.execute(sql_query, employer)
+        cursor.execute(sql_query, employer, generate_email())
     connection.commit()
 
 
@@ -101,8 +101,9 @@ def fill_applicants(position_codes, education_codes):
     """ Заполнение таблицы "Соискатели" """
     logging.info('Заполнение таблицы "Соискатели"...')
     sql_query = "INSERT INTO Applicants " \
-                "(Name, SecondName, Patronymic, Sex, PhoneNumber, PositionCode, EducationCode)" \
-                " VALUES (?,?,?,?,?,?,?);"
+                "(Name, SecondName, Patronymic, Sex, Email, " \
+                "PhoneNumber, PositionCode, EducationCode) " \
+                "VALUES (?,?,?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
         if choice([True, False]):
             name = choice(NAME_MALE)
@@ -116,7 +117,7 @@ def fill_applicants(position_codes, education_codes):
             sex = 'Ж'
         position_code = choice(position_codes)
         education_code = choice(education_codes)
-        cursor.execute(sql_query, name, second_name, patronymic, sex,
+        cursor.execute(sql_query, name, second_name, patronymic, sex, generate_email(),
                        generate_phone_number(), position_code[0], education_code[0])
     connection.commit()
 
@@ -125,8 +126,8 @@ def fill_agents():
     """ Заполнение таблицы "Агенты" """
     logging.info('Заполнение таблицы "Агенты"...')
     sql_query = "INSERT INTO Agents " \
-                "(Name, SecondName, Patronymic, Sex, PhoneNumber) " \
-                "VALUES (?,?,?,?,?);"
+                "(Name, SecondName, Patronymic, Sex, Email, PhoneNumber) " \
+                "VALUES (?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_AGENTS):
         if choice([True, False]):
             name = choice(NAME_MALE)
@@ -139,7 +140,7 @@ def fill_agents():
             patronymic = choice(PATRONYMIC_FEMALE)
             sex = 'Ж'
         cursor.execute(sql_query, name, second_name, patronymic, sex,
-                       generate_phone_number())
+                       generate_email(), generate_phone_number())
     connection.commit()
 
 
@@ -159,3 +160,15 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
 def generate_phone_number():
     """ Генерация номера телефона """
     return f'+7({randint(900, 999)}){randint(100, 999)}-{randint(10, 99)}-{randint(10, 99)}'
+
+
+def generate_email():
+    """ Генерация адреса элктронной почты """
+    extensions = ['com', 'net', 'org', 'gov']
+    domains = ['gmail', 'yahoo', 'comcast', 'rambler', 'mail', 'hotmail', 'outlook', 'yandex']
+
+    ext = choice(extensions)
+    domain = choice(domains)
+    username = ''.join(choice(ascii_lowercase + digits) for _ in range(randint(1, 20)))
+
+    return f'{username}@{domain}.{ext}'

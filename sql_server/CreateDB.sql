@@ -9,7 +9,7 @@ CREATE TABLE Agents
 	SecondName nvarchar(20)  NULL ,
 	Patronymic nvarchar(20)  NULL ,
 	PhoneNumber char(16)  NULL ,
-	Email char(18)  NULL ,
+	Email varchar(40)  NULL ,
 	Sex nchar(1)  NULL
 )
 go
@@ -37,7 +37,7 @@ CREATE TABLE Applicants
 	RegistrationAddress nvarchar(120)  NULL ,
 	PhoneNumber char(16)  NULL ,
 	JobExperience nvarchar(120)  NULL ,
-	Email varchar(20)  NULL ,
+	Email varchar(40)  NULL ,
 	EducationCode uniqueidentifier  NOT NULL ,
 	PositionCode uniqueidentifier  NOT NULL
 )
@@ -105,7 +105,7 @@ CREATE TABLE Employers
 	EmployerOrganization nvarchar(60)  NOT NULL ,
 	OrganizationAddress nvarchar(120)  NULL ,
 	PhoneNumber int  NULL ,
-	Email varchar(60)  NULL ,
+	Email varchar(40)  NULL ,
 	License varchar(20)  NULL 
 )
 go

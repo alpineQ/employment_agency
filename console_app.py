@@ -1,26 +1,27 @@
 """ Консольное приложение для работы с EmploymentAgencyDB """
+# pylint: disable=c-extension-no-member
 import pyodbc
 
-SERVER = 'localhost'
-DATABASE = 'EmploymentAgencyDB'
-USERNAME = input("Имя пользователя: ")
-PASSWORD = input("Пароль: ")
 
-# pylint: disable=invalid-name
-connection = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
-                            'Server=' + SERVER + ';'
-                            'Database=' + DATABASE + ';'
-                            'uid=' + USERNAME + ';'
-                            'PWD=' + PASSWORD)
-cursor = connection.cursor()
-print('Connection successful!')
+if __name__ == '__main__':
+    SERVER = 'localhost'
+    DATABASE = 'EmploymentAgencyDB'
+    username = input("Имя пользователя: ")
+    password = input("Пароль: ")
 
-print('"exit" для выхода')
-request = ''
-while request != 'exit':
-    request = input('Запрос: ')
-    cursor.execute(request)
-    results = cursor.fetchall()
-    print(results)
+    connection = pyodbc.connect('Driver={ODBC Driver 17 for SQL Server};'
+                                'Server=' + SERVER + ';'
+                                'Database=' + DATABASE + ';'
+                                'uid=' + username + ';'
+                                'PWD=' + password)
+    cursor = connection.cursor()
+    print('Connection successful!')
 
-connection.close()
+    print('"exit" для выхода')
+    while request := '' != 'exit':
+        request = input('Запрос: ')
+        cursor.execute(request)
+        results = cursor.fetchall()
+        print(results)
+
+    connection.close()
