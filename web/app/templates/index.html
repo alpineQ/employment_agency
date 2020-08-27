@@ -5,29 +5,37 @@
 <div class="d-flex justify-content-between">
     <h1><i class="fa fa-suitcase"></i> Employment Agency</h1>
 
-        <div class="btn-group" role="group">
-            <form action="/fill_db/" method="post">
-                <button class="btn btn-primary" name="fill_db_button" value="fill">
-                    <i class="fas fa-server"></i> Сгенерировать данные
-                </button>
-            </form>
-            <form action="/clear_db/" method="post">
-                <button class="btn btn-danger" name="clear_db_button" value="fill">
-                    <i class="fas fa-trash-alt"></i> Удалить все данные
-                </button>
-            </form>
-        </div>
+    <div class="btn-group" role="group">
+        <button onclick="window.location='/fill_db/'" class="btn btn-primary">
+            <i class="fas fa-server"></i> <b>Сгенерировать данные</b>
+        </button>
+        <button onclick="window.location='/clear_db/'" class="btn btn-danger">
+            <i class="fas fa-trash-alt"></i> <b>Удалить все данные</b>
+        </button>
+    </div>
 
 </div>
 
 <div class="list-group">
     {% for table in tables %}
     <a href="{{ table['url'] }}" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex justify-content-between">
-            <h4 class="mb-1">
+        <div class="row">
+            <h4 class="mb-1 col-md-10">
                 <i class="{{ table.get('icon') }}"></i> {{ table['name'] }}
             </h4>
-            <h5><span class="badge badge-primary badge-pill">{{ table['n_records'] }}</span></h5>
+            <div class="col-md-2">
+                <div class="btn-group" role="group">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-server"></i>
+                    </button>
+                    <button class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button class="btn btn-secondary">
+                        <b>{{ table['n_records'] }}</b>
+                    </button>
+                </div>
+            </div>
         </div>
     </a>
     {% endfor %}

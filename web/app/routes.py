@@ -53,14 +53,14 @@ def note_info(note_id):
                            types=types, zip=zip)
 
 
-@app.route('/fill_db/', methods=['POST'])
+@app.route('/fill_db/')
 def generate_data():
     """ Заполнение БД данными """
     fill_db()
     return redirect('/')
 
 
-@app.route('/clear_db/', methods=['POST'])
+@app.route('/clear_db/')
 def delete_all_data():
     """ Заполнение БД данными """
     cursor.execute("DROP DATABASE EmploymentAgencyDB")
