@@ -29,7 +29,8 @@ def table_route():
     cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{table_info['db']}'")
     types = cursor.fetchall()
-    return render_template('table.html', table=table_data, table_info=table_info, types=types)
+    return render_template('table.html', table=table_data, table_info=table_info,
+                           types=types, zip=zip)
 
 
 @app.route('/agents/<note_id>/')
@@ -48,7 +49,8 @@ def note_info(note_id):
     cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{table_info['db']}'")
     types = cursor.fetchall()
-    return render_template('table.html', table=table_data, table_info=table_info, types=types)
+    return render_template('table.html', table=table_data, table_info=table_info,
+                           types=types, zip=zip)
 
 
 @app.route('/fill_db/', methods=['POST'])

@@ -15,8 +15,15 @@
         <tbody>
         {% for record in table %}
         <tr onclick="window.location='{{ table_info['url'] }}{{ record[0] }}/'" class="list-group-item-action">
-            {% for field in record[1:] %}
+            {% for field, type in zip(record[1:], types[1:]) %}
+            {% if type[0] == 'uniqueidentifier' %}
+            <td>{{ field[:8] }}</td>
+            {% elif type[0] == 'datetime' and field != None %}
+            {% set date = (field).__str__() %}
+            <td>{{ date[:date.find(' ')] }}</td>
+            {% else %}
             <td>{{ field }}</td>
+            {% endif %}
             {% endfor %}
         </tr>
         {% endfor %}

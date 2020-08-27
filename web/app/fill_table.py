@@ -19,10 +19,12 @@ EMPLOYER_ENDINGS = [' & CO', ' Entertainment', ' ОАО', ' Company', ' Industri
 VACANCY_STATUS = ['Свободна', 'Занята']
 
 POSITION = ['Дворник', 'Программист', 'Начальник отдела', 'Секретарь', 'Бухгалтер',
-            'Охранник', 'Помощник регионального менеджера']
+            'Охранник', 'Помощник регионального менеджера', 'Инженер', 'Повар',
+            'Строитель', 'HR']
+INDUSTRIES = ['IT', 'Туризм', 'Искусство', 'Строительство', 'HR', 'Шоу бизнес']
 
-NAME_MALE = ['Григорий', 'Андрей', 'Сергей', 'Михаил', 'Владимир']
-NAME_FEMALE = ['Татьяна', 'Маргарита', 'Анастасия', 'Екатерина', 'Анна']
+NAME_MALE = ['Григорий', 'Андрей', 'Сергей', 'Михаил', 'Владимир', 'Максим', 'Игорь', 'Егор']
+NAME_FEMALE = ['Татьяна', 'Маргарита', 'Анастасия', 'Екатерина', 'Анна', 'Евгения', 'Елена']
 SECOND_NAME_MALE = ['Вихров', 'Минин', 'Смирнов', 'Шувалов', 'Рязанцев', 'Балабанов', 'Клюквин']
 SECOND_NAME_FEMALE = ['Симонова', 'Андреева', 'Скоршева', 'Мальцева', 'Гришечкина', 'Синицина']
 PATRONYMIC_MALE = ['Иванович', 'Андреевич', 'Юрьевич', 'Семенович', 'Дмитриевич']
@@ -73,20 +75,22 @@ def fill_employers():
 def fill_positions():
     """ Заполнение таблицы "Должности" """
     logging.info('Заполнение таблицы "Должности"...')
-    sql_query = "INSERT INTO Positions (PositionName) VALUES (?);"
+    sql_query = "INSERT INTO Positions (PositionName, Industry) VALUES (?,?);"
     for _ in range(AMOUNT_OF_POSITIONS):
-        position = choice(POSITION)
-        cursor.execute(sql_query, position)
+        cursor.execute(sql_query, choice(POSITION), choice(INDUSTRIES))
     connection.commit()
 
 
 def fill_vacancies(employer_codes):
     """ Заполнение таблицы "Вакансии" """
     logging.info('Заполнение таблицы "Вакансии"...')
-    sql_query = "INSERT INTO Vacancies (EmployerCode, VacancyStatus) VALUES (?,?);"
+    sql_query = "INSERT INTO Vacancies " \
+                "(EmployerCode, VacancyStatus, Industry, PlacementDate)" \
+                " VALUES (?,?,?,?);"
     for employer_code in employer_codes:
         for _ in range(randint(5, 10)):
-            cursor.execute(sql_query, employer_code[0], choice(VACANCY_STATUS))
+            cursor.execute(sql_query, employer_code[0], choice(VACANCY_STATUS), choice(INDUSTRIES),
+                           generate_date(date(2000, 1, 1), date(2020, 1, 1)))
     connection.commit()
 
 
@@ -104,9 +108,9 @@ def fill_applicants(position_codes, education_codes):
     """ Заполнение таблицы "Соискатели" """
     logging.info('Заполнение таблицы "Соискатели"...')
     sql_query = "INSERT INTO Applicants " \
-                "(Name, SecondName, Patronymic, Sex, Email, " \
+                "(Name, SecondName, Patronymic, Sex, Email, Birthday, " \
                 "PhoneNumber, PositionCode, EducationCode) " \
-                "VALUES (?,?,?,?,?,?,?,?);"
+                "VALUES (?,?,?,?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
         if choice([True, False]):
             name = choice(NAME_MALE)
@@ -121,7 +125,8 @@ def fill_applicants(position_codes, education_codes):
         position_code = choice(position_codes)
         education_code = choice(education_codes)
         cursor.execute(sql_query, name, second_name, patronymic, sex, generate_email(),
-                       generate_phone_number(), position_code[0], education_code[0])
+                       generate_date(date(1970, 1, 1), date(2000, 1, 1)), generate_phone_number(),
+                       position_code[0], education_code[0])
     connection.commit()
 
 
@@ -151,12 +156,15 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
     """ Заполнение таблицы "Сделки" """
     logging.info('Заполнение таблицы "Сделки"...')
     sql_query = "INSERT INTO Deals " \
-                "(ApplicantCode, VacancyCode, AgentCode, WasPaid, IssueDate) " \
-                "VALUES (?,?,?,?,?);"
+                "(ApplicantCode, VacancyCode, AgentCode, WasPaid, IssueDate, PaymentDate) " \
+                "VALUES (?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_DEALS):
-        cursor.execute(sql_query, choice(applicant_codes)[0],
-                       choice(vacancy_codes)[0], choice(agent_codes)[0], choice(['+', '-']),
-                       generate_date(date(2000, 1, 1), date(2020, 1, 1)))
+        issue_date = generate_date(date(2000, 1, 1), date(2020, 1, 1))
+        was_paid = choice([True, False])
+        payment_date = generate_date(issue_date, date(2020, 1, 1)) if was_paid else None
+
+        cursor.execute(sql_query, choice(applicant_codes)[0], choice(vacancy_codes)[0],
+                       choice(agent_codes)[0], '+' if was_paid else '-', issue_date, payment_date)
     connection.commit()
 
 
@@ -172,7 +180,7 @@ def generate_email():
 
     ext = choice(extensions)
     domain = choice(domains)
-    username = ''.join(choice(ascii_lowercase + digits) for _ in range(randint(1, 20)))
+    username = ''.join(choice(ascii_lowercase + digits) for _ in range(randint(6, 12)))
 
     return f'{username}@{domain}.{ext}'
 

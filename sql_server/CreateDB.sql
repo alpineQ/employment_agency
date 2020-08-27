@@ -124,7 +124,7 @@ CREATE TABLE Positions
 (
 	PositionCode uniqueidentifier  NOT NULL ,
 	PositionName nvarchar(60)  NULL ,
-	Industry varchar(20)  NULL 
+	Industry nvarchar(20)  NULL
 )
 go
 
@@ -145,7 +145,7 @@ CREATE TABLE Vacancies
 	Salary money  NULL ,
 	Schedule nvarchar(60)  NULL ,
 	VacancyStatus nvarchar(60)  NOT NULL ,
-	Industry varchar(20)  NULL ,
+	Industry nvarchar(20)  NULL ,
 	RequiredEducation varchar(20)  NULL ,
 	Qualification varchar(20)  NULL ,
 	EmployerCode uniqueidentifier  NOT NULL 
