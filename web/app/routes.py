@@ -9,8 +9,8 @@ from app import app, cursor
 def index():
     """ Список всех таблиц БД """
     for table in app.config['TABLES']:
-        cursor.execute(f"SELECT COUNT(*) FROM {table['db']}")
-        table['n_records'] = cursor.fetchone()[0]
+        cursor.execute(f"SELECT COUNT(*) FROM {app.config['TABLES'][table]['db']}")
+        app.config['TABLES'][table]['n_records'] = cursor.fetchone()[0]
     return render_template('index.html', tables=app.config['TABLES'])
 
 
@@ -23,14 +23,14 @@ def index():
 @app.route('/vacancies/')
 def table_route():
     """ Данные таблиц """
-    table_info = [table for table in app.config['TABLES'] if table['url'] == request.path][0]
-    cursor.execute(f"SELECT * FROM {table_info['db']}")
+    table_name = request.path[1:-1]
+    cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']}")
     table_data = cursor.fetchall()
     cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{table_info['db']}'")
+                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
     types = cursor.fetchall()
-    return render_template('table.html', table=table_data, table_info=table_info,
-                           types=types, zip=zip)
+    return render_template('table.html', table_data=table_data, name=table_name,
+                           types=types, zip=zip, tables=app.config['TABLES'])
 
 
 @app.route('/agents/<note_id>/')
@@ -42,25 +42,25 @@ def table_route():
 @app.route('/vacancies/<note_id>/')
 def note_info(note_id):
     """ Информация о конкретной записи """
-    table_name = request.path[:request.path.find('/', 1)+1]
-    table_info = [table for table in app.config['TABLES'] if table['url'] == table_name][0]
-    cursor.execute(f"SELECT * FROM {table_info['db']} WHERE {table_info['key']} = (?)", note_id)
-    table_data = cursor.fetchall()
+    table_name = request.path[1:request.path.find('/', 1)]
+    cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']} "
+                   f"WHERE {app.config['TABLES'][table_name]['key']} = (?)", note_id)
+    table_data = cursor.fetchone()
     cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{table_info['db']}'")
+                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
     types = cursor.fetchall()
-    return render_template('table.html', table=table_data, table_info=table_info,
-                           types=types, zip=zip)
+    return render_template('note.html', table_data=table_data, name=table_name,
+                           types=types, zip=zip, tables=app.config['TABLES'])
 
 
-@app.route('/fill_db/')
+@app.route('/fill_db/', methods=['POST'])
 def generate_data():
     """ Заполнение БД данными """
     fill_db()
     return redirect('/')
 
 
-@app.route('/clear_db/')
+@app.route('/clear_db/', methods=['POST'])
 def delete_all_data():
     """ Заполнение БД данными """
     cursor.execute("DROP DATABASE EmploymentAgencyDB")

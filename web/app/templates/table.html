@@ -2,19 +2,19 @@
 
 {% block content %}
 
-<h1></h1>
+<h1>{{ tables[name]['name'] }}</h1>
 <div class="table-responsive">
     <table class="table">
         <thead>
         <tr>
-            {% for field in table_info['fields'][1:] %}
+            {% for field in tables[name]['fields'][1:] %}
             <th scope="col">{{ field }}</th>
             {% endfor %}
         </tr>
         </thead>
         <tbody>
-        {% for record in table %}
-        <tr onclick="window.location='{{ table_info['url'] }}{{ record[0] }}/'" class="list-group-item-action">
+        {% for record in table_data %}
+        <tr onclick="window.location='{{ tables[name]['url'] }}{{ record[0] }}/'" class="list-group-item-action" style="cursor: pointer;">
             {% for field, type in zip(record[1:], types[1:]) %}
                 {% if type[0] == 'uniqueidentifier' %}
                     <td>{{ field[:8] }}</td>

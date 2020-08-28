@@ -5,12 +5,11 @@
   "USERNAME": "SA",
   "RETRIES_NUM": 5,
   "RETRIES_TIMEOUT": 10,
-  "TABLES": [
-    {
+  "TABLES": {
+    "agents": {
       "name": "Агенты",
       "db": "Agents",
       "key": "AgentCode",
-      "url": "/agents/",
       "fields": [
         "ID",
         "Имя",
@@ -22,11 +21,10 @@
       ],
       "icon": "fas fa-user-alt"
     },
-    {
+    "applicants": {
       "name": "Соискатели",
       "db": "Applicants",
       "key": "ApplicantCode",
-      "url": "/applicants/",
       "fields": [
         "ID",
         "Имя",
@@ -45,10 +43,9 @@
       ],
       "icon": "fas fa-users"
     },
-    {
+    "deals": {
       "name": "Сделки",
       "db": "Deals",
-      "url": "/deals/",
       "key": "DealCode",
       "fields": [
         "ID",
@@ -62,11 +59,10 @@
       ],
       "icon": "fas fa-badge-dollar"
     },
-    {
+    "education": {
       "name": "Образование",
       "db": "Education",
       "key": "EducationCode",
-      "url": "/education/",
       "fields": [
         "ID",
         "Образование",
@@ -75,11 +71,10 @@
       ],
       "icon": "fas fa-university"
     },
-    {
+    "employers": {
       "name": "Работодатели",
       "db": "Employers",
       "key": "EmployerCode",
-      "url": "/employers/",
       "fields": [
         "ID",
         "Организация",
@@ -90,11 +85,10 @@
       ],
       "icon": "fas fa-user-tie"
     },
-    {
+    "positions": {
       "name": "Должности",
       "db": "Positions",
       "key": "PositionCode",
-      "url": "/positions/",
       "fields": [
         "ID",
         "Должность",
@@ -102,11 +96,10 @@
       ],
       "icon": "fas fa-user-tag"
     },
-    {
+    "vacancies": {
       "name": "Вакансии",
       "db": "Vacancies",
       "key": "VacancyCode",
-      "url": "/vacancies/",
       "fields": [
         "ID",
         "Дата обращения",
@@ -120,5 +113,5 @@
       ],
       "icon": "fas fa-users-medical"
     }
-  ]
+  }
 }

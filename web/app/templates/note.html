@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ tables[name]['name'] }}</h1>
+{% for field, record in zip(tables[name]['fields'], table_data) %}
+<div class="input-group mb-1">
+    <span class="input-group-text">{{ field }}</span>
+    <input type="text" class="form-control" placeholder="{{ record }}">
+</div>
+{% endfor %}
+
+<form>
+    <button formaction="/{{name}}/update/" formmethod="post" id="update_button" class="btn btn-primary">
+        <i class="fas fa-save"></i> <b>Сохранить</b>
+    </button>
+</form>
+{% endblock %}
