@@ -1,5 +1,6 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
 import logging
+from uuid import UUID
 from flask import render_template, redirect, request
 from app.fill_table import fill_db
 from app import app, cursor
@@ -66,3 +67,15 @@ def delete_all_data():
     cursor.execute("DROP DATABASE EmploymentAgencyDB")
     logging.info(cursor.fetchall())
     return redirect('/')
+
+
+@app.route('/agents/update/', methods=['POST'])
+def update_note():
+    """ Обновление записи в таблице """
+    table_name = request.path[1:request.path.find('/', 1)]
+    sql_query = f"UPDATE {table_name} " \
+                f"SET Name = (?), Sex = (?) " \
+                f"WHERE AgentCode = (?)"
+    cursor.execute(sql_query, request.form['Имя'], request.form['Пол'],
+                   UUID(request.form['key_ID']))
+    return redirect(f"/agents/{request.form['key_ID']}")
