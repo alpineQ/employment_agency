@@ -164,7 +164,7 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
         payment_date = generate_date(issue_date, date(2020, 1, 1)) if was_paid else None
 
         cursor.execute(sql_query, choice(applicant_codes)[0], choice(vacancy_codes)[0],
-                       choice(agent_codes)[0], '+' if was_paid else '-', issue_date, payment_date)
+                       choice(agent_codes)[0], 1 if was_paid else 0, issue_date, payment_date)
     connection.commit()
 
 

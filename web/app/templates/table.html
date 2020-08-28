@@ -8,7 +8,7 @@
         <thead>
         <tr>
             {% for field in tables[name]['fields'][1:] %}
-            <th scope="col">{{ field }}</th>
+            <th class="text-center" scope="col">{{ field }}</th>
             {% endfor %}
         </tr>
         </thead>
@@ -16,14 +16,21 @@
         {% for record in table_data %}
         <tr onclick="window.location='{{ tables[name]['url'] }}{{ record[0] }}/'" class="list-group-item-action" style="cursor: pointer;">
             {% for field, type in zip(record[1:], types[1:]) %}
+                <td class="text-center">
                 {% if type[0] == 'uniqueidentifier' %}
-                    <td>{{ field[:8] }}</td>
+                    {{ field[:8] }}
                 {% elif type[0] == 'datetime' and field != None %}
                     {% set date = (field).__str__() %}
-                    <td>{{ date[:date.find(' ')] }}</td>
+                    {{ date[:date.find(' ')] }}
+                {% elif type[0] == 'bit' %}
+                    <input class="form-check-input" type="checkbox"
+                               {% if field == 1 %}
+                               checked
+                               {% endif %} disabled>
                 {% else %}
-                    <td>{{ field }}</td>
+                    {{ field }}
                 {% endif %}
+                </td>
             {% endfor %}
         </tr>
         {% endfor %}

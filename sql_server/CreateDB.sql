@@ -62,7 +62,7 @@ CREATE TABLE Deals
 	DealCode uniqueidentifier  NOT NULL ,
 	IssueDate datetime  NULL ,
 	CommissionFee integer  NULL ,
-	WasPaid char(1)  NULL ,
+	WasPaid bit  NULL ,
 	PaymentDate datetime  NULL ,
 	ApplicantCode uniqueidentifier  NOT NULL ,
 	VacancyCode uniqueidentifier  NOT NULL ,
