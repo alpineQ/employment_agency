@@ -1,8 +1,7 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
-import logging
 from flask import render_template, redirect, request
 from app.fill_table import fill_db
-from app.utils import update_note, delete_note, add_note
+from app.utils import update_note, delete_note, add_note, delete_table
 from app import app, cursor
 
 
@@ -68,7 +67,6 @@ def generate_data():
 def delete_all_data():
     """ Заполнение БД данными """
     cursor.execute("DROP DATABASE EmploymentAgencyDB")
-    logging.info(cursor.fetchall())
     return redirect('/')
 
 
@@ -88,6 +86,20 @@ def update_note_route():
     return redirect(f'/{table}/')
 
 
+@app.route('/agents/delete/<note_id>/', methods=['POST'])
+@app.route('/applicants/delete/<note_id>/', methods=['POST'])
+@app.route('/deals/delete/<note_id>/', methods=['POST'])
+@app.route('/education/delete/<note_id>/', methods=['POST'])
+@app.route('/employers/delete/<note_id>/', methods=['POST'])
+@app.route('/positions/delete/<note_id>/', methods=['POST'])
+@app.route('/vacancies/delete/<note_id>/', methods=['POST'])
+def delete_note_route(note_id):
+    """ Удаление таблицы """
+    table = request.path[1:request.path.find('/', 1)]
+    delete_note(table, app.config['TABLES'][table]['key'], note_id, app.config['TABLES'])
+    return redirect(f'/{table}/')
+
+
 @app.route('/agents/delete/', methods=['POST'])
 @app.route('/applicants/delete/', methods=['POST'])
 @app.route('/deals/delete/', methods=['POST'])
@@ -95,11 +107,11 @@ def update_note_route():
 @app.route('/employers/delete/', methods=['POST'])
 @app.route('/positions/delete/', methods=['POST'])
 @app.route('/vacancies/delete/', methods=['POST'])
-def delete_note_route():
+def delete_table_route():
     """ Удаление таблицы """
     table = request.path[1:request.path.find('/', 1)]
-    cursor.execute(f"TRUNCATE TABLE {table}")
-    return redirect(request.referrer)
+    delete_table(table, app.config['TABLES'])
+    return redirect('/')
 
 
 @app.route('/agents/add/')
@@ -132,7 +144,6 @@ def add_note_view():
 def add_note_route():
     """ Страница добавления записи в таблице """
     table_name = request.path[1:request.path.find('/', 1)]
-    logging.info(request.form)
     if not add_note(table_name, request.form):
         return 'Bad request', 400
     return redirect(f'/{table_name}/')

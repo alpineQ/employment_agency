@@ -20,7 +20,7 @@
         "Пол"
       ],
       "icon": "fas fa-user-alt",
-      "dependencies": "Deals"
+      "dependencies": ["deals"]
     },
     "applicants": {
       "name": "Соискатели",
@@ -71,7 +71,7 @@
         "Образовательная организация"
       ],
       "icon": "fas fa-university",
-      "dependencies": ["Applicants"]
+      "dependencies": ["applicants"]
     },
     "employers": {
       "name": "Работодатели",
@@ -86,7 +86,7 @@
         "Лицензия"
       ],
       "icon": "fas fa-user-tie",
-      "dependencies": ["Vacancies"]
+      "dependencies": ["vacancies"]
     },
     "positions": {
       "name": "Должности",
@@ -98,7 +98,7 @@
         "Отрасль"
       ],
       "icon": "fas fa-user-tag",
-      "dependencies": ["Applicants"]
+      "dependencies": ["applicants"]
     },
     "vacancies": {
       "name": "Вакансии",
@@ -116,7 +116,7 @@
         "ID работодателя"
       ],
       "icon": "fas fa-users-medical",
-      "dependencies": ["Applicants"]
+      "dependencies": ["deals"]
     }
   }
 }
