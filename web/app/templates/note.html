@@ -4,13 +4,13 @@
 
 <h1>{{ tables[name]['name'] }}</h1>
 <form>
-    {% for field, record in zip(tables[name]['fields'], table_data) %}
+    {% for column_name, field_name, record in zip(column_names, tables[name]['fields'], table_data) %}
     <div class="input-group mb-1">
-        <span class="input-group-text">{{ field }}</span>
-        {% if field == tables[name]['fields'][0] %}
-        <input type="text" class="form-control" name="key_{{field}}" value="{{ record }}" placeholder="{{ record }}">
+        <span class="input-group-text">{{ field_name }}</span>
+        {% if field_name == tables[name]['fields'][0] %}
+        <input type="text" class="form-control" name="{{column_name[0]}}*" value="{{ record }}" placeholder="{{ record }}">
         {% else %}
-        <input type="text" class="form-control" name="{{field}}" value="{{ record }}" placeholder="{{ record }}">
+        <input type="text" class="form-control" name="{{column_name[0]}}" value="{{ record }}" placeholder="{{ record }}">
         {% endif %}
     </div>
     {% endfor %}

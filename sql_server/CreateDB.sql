@@ -146,7 +146,7 @@ CREATE TABLE Vacancies
 	Schedule nvarchar(60)  NULL ,
 	VacancyStatus nvarchar(60)  NOT NULL ,
 	Industry nvarchar(20)  NULL ,
-	RequiredEducation varchar(20)  NULL ,
+	RequiredEducation nvarchar(60)  NULL ,
 	Qualification varchar(20)  NULL ,
 	EmployerCode uniqueidentifier  NOT NULL 
 )

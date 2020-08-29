@@ -1,8 +1,8 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
 import logging
-from uuid import UUID
 from flask import render_template, redirect, request
 from app.fill_table import fill_db
+from app.utils import update_note
 from app import app, cursor
 
 
@@ -47,11 +47,11 @@ def note_info(note_id):
     cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']} "
                    f"WHERE {app.config['TABLES'][table_name]['key']} = (?)", note_id)
     table_data = cursor.fetchone()
-    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+    cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-    types = cursor.fetchall()
+    column_names = cursor.fetchall()
     return render_template('note.html', table_data=table_data, name=table_name,
-                           types=types, zip=zip, tables=app.config['TABLES'])
+                           zip=zip, tables=app.config['TABLES'], column_names=column_names)
 
 
 @app.route('/fill_db/', methods=['POST'])
@@ -70,12 +70,16 @@ def delete_all_data():
 
 
 @app.route('/agents/update/', methods=['POST'])
-def update_note():
+@app.route('/applicants/update/', methods=['POST'])
+@app.route('/deals/update/', methods=['POST'])
+@app.route('/education/update/', methods=['POST'])
+@app.route('/employers/update/', methods=['POST'])
+@app.route('/positions/update/', methods=['POST'])
+@app.route('/vacancies/update/', methods=['POST'])
+def update_table():
     """ Обновление записи в таблице """
-    table_name = request.path[1:request.path.find('/', 1)]
-    sql_query = f"UPDATE {table_name} " \
-                f"SET Name = (?), Sex = (?) " \
-                f"WHERE AgentCode = (?)"
-    cursor.execute(sql_query, request.form['Имя'], request.form['Пол'],
-                   UUID(request.form['key_ID']))
-    return redirect(f"/agents/{request.form['key_ID']}")
+    table = request.path[1:request.path.find('/', 1)]
+    table_name = app.config['TABLES'][table]['db']
+    if not update_note(table_name, request.form):
+        return 'Bad request', 400
+    return redirect(request.referrer)

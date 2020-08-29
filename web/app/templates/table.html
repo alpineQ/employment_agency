@@ -27,6 +27,9 @@
                                {% if field == 1 %}
                                checked
                                {% endif %} disabled>
+                {% elif type[0] == 'money' %}
+                    {% set money = field.__str__() %}
+                    {{ money[:money.find('.')] }}
                 {% else %}
                     {{ field }}
                 {% endif %}
