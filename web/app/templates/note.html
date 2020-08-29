@@ -7,15 +7,18 @@
     {% for column_name, field_name, record in zip(column_names, tables[name]['fields'], table_data) %}
     <div class="input-group mb-1">
         <span class="input-group-text">{{ field_name }}</span>
-        {% if field_name == tables[name]['fields'][0] %}
-        <input type="text" class="form-control" name="{{column_name[0]}}*" value="{{ record }}" placeholder="{{ record }}">
-        {% else %}
-        <input type="text" class="form-control" name="{{column_name[0]}}" value="{{ record }}" placeholder="{{ record }}">
-        {% endif %}
+        <input type="text" class="form-control" name="{{column_name[0]}}" value="{{ record }}"
+               placeholder="{{ record }}">
     </div>
     {% endfor %}
-    <button formaction="/{{name}}/update/" formmethod="post" class="btn btn-primary">
-        <i class="fas fa-save"></i> <b>Сохранить</b>
-    </button>
+    <div class="mt-2">
+        <button formaction="/{{name}}/update/" formmethod="post" class="btn btn-primary">
+            <i class="fas fa-save"></i> <b>Сохранить</b>
+        </button>
+        <button formaction="/{{name}}/delete/" formmethod="post" class="btn btn-danger">
+            <i class="fas fa-trash"></i> <b>Удалить</b>
+        </button>
+    </div>
 </form>
+
 {% endblock %}

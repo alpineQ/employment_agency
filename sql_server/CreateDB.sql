@@ -31,7 +31,7 @@ CREATE TABLE Applicants
 	SecondName nvarchar(20)  NULL ,
 	Patronymic nvarchar(20)  NULL ,
 	ApplicationDate datetime  NULL ,
-	Qualification varchar(20)  NULL ,
+	Qualification nvarchar(20)  NULL ,
 	Birthday datetime  NULL ,
 	Sex nchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
@@ -106,7 +106,7 @@ CREATE TABLE Employers
 	OrganizationAddress nvarchar(120)  NULL ,
 	PhoneNumber char(16)  NULL ,
 	Email varchar(40)  NULL ,
-	License varchar(20)  NULL 
+	License nvarchar(20)  NULL
 )
 go
 
@@ -147,7 +147,7 @@ CREATE TABLE Vacancies
 	VacancyStatus nvarchar(60)  NOT NULL ,
 	Industry nvarchar(20)  NULL ,
 	RequiredEducation nvarchar(60)  NULL ,
-	Qualification varchar(20)  NULL ,
+	Qualification nvarchar(20)  NULL ,
 	EmployerCode uniqueidentifier  NOT NULL 
 )
 go

@@ -2,7 +2,7 @@
 import logging
 from flask import render_template, redirect, request
 from app.fill_table import fill_db
-from app.utils import update_note
+from app.utils import update_note, delete_note
 from app import app, cursor
 
 
@@ -76,10 +76,28 @@ def delete_all_data():
 @app.route('/employers/update/', methods=['POST'])
 @app.route('/positions/update/', methods=['POST'])
 @app.route('/vacancies/update/', methods=['POST'])
-def update_table():
+def update_route():
     """ Обновление записи в таблице """
     table = request.path[1:request.path.find('/', 1)]
     table_name = app.config['TABLES'][table]['db']
-    if not update_note(table_name, request.form):
+    if not update_note(table_name, request.form, app.config['TABLES'][table]['key']):
         return 'Bad request', 400
     return redirect(request.referrer)
+
+
+@app.route('/agents/delete/', methods=['POST'])
+@app.route('/applicants/delete/', methods=['POST'])
+@app.route('/deals/delete/', methods=['POST'])
+@app.route('/education/delete/', methods=['POST'])
+@app.route('/employers/delete/', methods=['POST'])
+@app.route('/positions/delete/', methods=['POST'])
+@app.route('/vacancies/delete/', methods=['POST'])
+def delete_route():
+    """ Обновление записи в таблице """
+    table = request.path[1:request.path.find('/', 1)]
+    table_name = app.config['TABLES'][table]['db']
+    key_field = app.config['TABLES'][table]['key']
+    if request.form.get(key_field, '') == '':
+        return 'Bad request', 400
+    delete_note(table_name, key_field, request.form[key_field], app.config['TABLES'])
+    return redirect(f'/{table}/')

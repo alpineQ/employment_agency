@@ -17,7 +17,7 @@
         <tr onclick="window.location='{{ tables[name]['url'] }}{{ record[0] }}/'" class="list-group-item-action" style="cursor: pointer;">
             {% for field, type in zip(record[1:], types[1:]) %}
                 <td class="text-center">
-                {% if type[0] == 'uniqueidentifier' %}
+                {% if type[0] == 'uniqueidentifier' and field != None %}
                     {{ field[:8] }}
                 {% elif type[0] == 'datetime' and field != None %}
                     {% set date = (field).__str__() %}

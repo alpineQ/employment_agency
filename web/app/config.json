@@ -19,7 +19,8 @@
         "Email",
         "Пол"
       ],
-      "icon": "fas fa-user-alt"
+      "icon": "fas fa-user-alt",
+      "dependencies": "Deals"
     },
     "applicants": {
       "name": "Соискатели",
@@ -69,7 +70,8 @@
         "Рекомендации",
         "Образовательная организация"
       ],
-      "icon": "fas fa-university"
+      "icon": "fas fa-university",
+      "dependencies": ["Applicants"]
     },
     "employers": {
       "name": "Работодатели",
@@ -83,7 +85,8 @@
         "Email",
         "Лицензия"
       ],
-      "icon": "fas fa-user-tie"
+      "icon": "fas fa-user-tie",
+      "dependencies": ["Vacancies"]
     },
     "positions": {
       "name": "Должности",
@@ -94,7 +97,8 @@
         "Должность",
         "Отрасль"
       ],
-      "icon": "fas fa-user-tag"
+      "icon": "fas fa-user-tag",
+      "dependencies": ["Applicants"]
     },
     "vacancies": {
       "name": "Вакансии",
@@ -111,7 +115,8 @@
         "Квалификация",
         "ID работодателя"
       ],
-      "icon": "fas fa-users-medical"
+      "icon": "fas fa-users-medical",
+      "dependencies": ["Applicants"]
     }
   }
 }
