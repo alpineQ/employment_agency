@@ -3,7 +3,8 @@
 {% block content %}
 
 <h1>
-    <a style="color: black;" href="/{{ name }}/"><i class="fa fa-long-arrow-left"></i></a> {{ tables[name]['name'] }}
+    <a style="color: black;font-size:smaller;"href="/{{ name }}/">
+        <i class="fa fa-long-arrow-left"></i></a> {{ tables[name]['name'] }}
 </h1>
 <form>
     {% for column_name, field_name, record, type in zip(column_names, tables[name]['fields'], table_data, types) %}

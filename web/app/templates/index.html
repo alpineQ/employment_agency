@@ -3,7 +3,10 @@
 {% block content %}
 
 <div class="d-flex justify-content-between mb-1">
-    <h1><i class="fa fa-suitcase"></i> Employment Agency</h1>
+    <h1>
+        <i class="fa fa-suitcase"></i> Employment Agency
+        <span style="font-size:medium" class="badge rounded-pill bg-primary align-top">v1.0</span>
+    </h1>
 
     <form>
         <div class="btn-group pt-2">
@@ -26,18 +29,18 @@
                 <i class="{{ tables[table].get('icon') }}"></i> {{ tables[table]['name'] }}
             </h3>
             <form class="col-sm-3 btn-group pb-1 pr-5">
-                    <button formaction="/fill_db/{{ table }}/" formmethod="post" class="btn btn-primary">
-                        <i class="fas fa-server"></i>
-                    </button>
-                    <button formaction="/{{ table }}/delete/" formmethod="post" class="btn btn-danger">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
-                    <button formaction="/{{ table }}/add/" formmethod="get" class="btn btn-success">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <button class="btn btn-secondary btn-block">
-                        <b>{{ tables[table]['n_records'] }}</b>
-                    </button>
+                <button formaction="/fill_db/{{ table }}/" formmethod="post" class="btn btn-primary">
+                    <i class="fas fa-server"></i>
+                </button>
+                <button formaction="/{{ table }}/delete/" formmethod="post" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button formaction="/{{ table }}/add/" formmethod="get" class="btn btn-success">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="btn btn-secondary btn-block">
+                    <b>{{ tables[table]['n_records'] }}</b>
+                </button>
             </form>
         </div>
     </a>
