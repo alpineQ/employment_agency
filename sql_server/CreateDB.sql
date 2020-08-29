@@ -5,8 +5,8 @@ USE EmploymentAgencyDB
 CREATE TABLE Agents
 (
 	AgentCode uniqueidentifier  NOT NULL ,
-	Name nvarchar(20)  NULL ,
 	SecondName nvarchar(20)  NULL ,
+	Name nvarchar(20)  NULL ,
 	Patronymic nvarchar(20)  NULL ,
 	PhoneNumber char(16)  NULL ,
 	Email varchar(40)  NULL ,
@@ -27,8 +27,8 @@ go
 CREATE TABLE Applicants
 (
 	ApplicantCode uniqueidentifier  NOT NULL ,
-	Name nvarchar(20)  NULL ,
 	SecondName nvarchar(20)  NULL ,
+	Name nvarchar(20)  NULL ,
 	Patronymic nvarchar(20)  NULL ,
 	ApplicationDate datetime  NULL ,
 	Qualification nvarchar(20)  NULL ,

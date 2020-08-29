@@ -21,16 +21,19 @@
 <div class="list-group">
     {% for table in tables %}
     <a href="/{{ table }}/" class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="row">
-            <h3 class="col-md-10 pt-1">
+        <div class="row pt-1">
+            <h3 class="col-md-9">
                 <i class="{{ tables[table].get('icon') }}"></i> {{ tables[table]['name'] }}
             </h3>
-            <form class="col-sm-2 btn-group pt-1 pb-1 pr-4">
+            <form class="col-sm-3 btn-group pb-1 pr-5">
                     <button formaction="/fill_db/{{ table }}/" formmethod="post" class="btn btn-primary">
                         <i class="fas fa-server"></i>
                     </button>
-                    <button formaction="/clear_db/{{ table }}/" formmethod="post" class="btn btn-danger">
+                    <button formaction="/{{ table }}/delete/" formmethod="post" class="btn btn-danger">
                         <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button formaction="/{{ table }}/add/" formmethod="get" class="btn btn-success">
+                        <i class="fas fa-plus"></i>
                     </button>
                     <button class="btn btn-secondary btn-block">
                         <b>{{ tables[table]['n_records'] }}</b>

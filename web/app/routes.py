@@ -22,7 +22,7 @@ def index():
 @app.route('/employers/')
 @app.route('/positions/')
 @app.route('/vacancies/')
-def table_route():
+def table_view():
     """ Данные таблиц """
     table_name = request.path[1:-1]
     cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']}")
@@ -41,7 +41,7 @@ def table_route():
 @app.route('/employers/<note_id>/')
 @app.route('/positions/<note_id>/')
 @app.route('/vacancies/<note_id>/')
-def note_info(note_id):
+def note_view(note_id):
     """ Информация о конкретной записи """
     table_name = request.path[1:request.path.find('/', 1)]
     cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']} "
@@ -79,7 +79,7 @@ def delete_all_data():
 @app.route('/employers/update/', methods=['POST'])
 @app.route('/positions/update/', methods=['POST'])
 @app.route('/vacancies/update/', methods=['POST'])
-def update_route():
+def update_note_route():
     """ Обновление записи в таблице """
     table = request.path[1:request.path.find('/', 1)]
     table_name = app.config['TABLES'][table]['db']
@@ -95,15 +95,11 @@ def update_route():
 @app.route('/employers/delete/', methods=['POST'])
 @app.route('/positions/delete/', methods=['POST'])
 @app.route('/vacancies/delete/', methods=['POST'])
-def delete_route():
-    """ Обновление записи в таблице """
+def delete_note_route():
+    """ Удаление таблицы """
     table = request.path[1:request.path.find('/', 1)]
-    table_name = app.config['TABLES'][table]['db']
-    key_field = app.config['TABLES'][table]['key']
-    if request.form.get(key_field, '') == '':
-        return 'Bad request', 400
-    delete_note(table_name, key_field, request.form[key_field], app.config['TABLES'])
-    return redirect(f'/{table}/')
+    cursor.execute(f"TRUNCATE TABLE {table}")
+    return redirect(request.referrer)
 
 
 @app.route('/agents/add/')
@@ -113,7 +109,7 @@ def delete_route():
 @app.route('/employers/add/')
 @app.route('/positions/add/')
 @app.route('/vacancies/add/')
-def add_note_page():
+def add_note_view():
     """ Страница добавления записи в таблице """
     table_name = request.path[1:request.path.find('/', 1)]
     cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "

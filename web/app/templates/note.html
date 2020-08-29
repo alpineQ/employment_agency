@@ -9,7 +9,9 @@
     {% for column_name, field_name, record, type in zip(column_names, tables[name]['fields'], table_data, types) %}
     <div class="input-group mb-1">
         <span class="input-group-text">{{ field_name }}</span>
-        {% if type[0] == 'datetime' %}
+        {% if column_name[0] == tables[name]['key'] %}
+        <input type="text" class="form-control" name="{{column_name[0]}}" value="{{ record }}" disabled="">
+        {% elif type[0] == 'datetime' %}
         {% set date = record.__str__() %}
         <input type="date" class="form-control" name="{{column_name[0]}}" value="{{ date[:date.find(' ')] }}">
         {% else %}
