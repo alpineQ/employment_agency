@@ -38,8 +38,8 @@ CREATE TABLE Applicants
 	PhoneNumber char(16)  NULL ,
 	JobExperience nvarchar(120)  NULL ,
 	Email varchar(40)  NULL ,
-	EducationCode uniqueidentifier  NOT NULL ,
-	PositionCode uniqueidentifier  NOT NULL
+	EducationCode uniqueidentifier  NULL ,
+	PositionCode uniqueidentifier  NULL
 )
 go
 
@@ -64,9 +64,9 @@ CREATE TABLE Deals
 	CommissionFee integer  NULL ,
 	WasPaid bit  NULL ,
 	PaymentDate datetime  NULL ,
-	ApplicantCode uniqueidentifier  NOT NULL ,
-	VacancyCode uniqueidentifier  NOT NULL ,
-	AgentCode uniqueidentifier  NOT NULL
+	ApplicantCode uniqueidentifier  NULL ,
+	VacancyCode uniqueidentifier  NULL ,
+	AgentCode uniqueidentifier  NULL
 )
 go
 
@@ -148,7 +148,7 @@ CREATE TABLE Vacancies
 	Industry nvarchar(20)  NULL ,
 	RequiredEducation nvarchar(60)  NULL ,
 	Qualification nvarchar(20)  NULL ,
-	EmployerCode uniqueidentifier  NOT NULL 
+	EmployerCode uniqueidentifier NULL
 )
 go
 

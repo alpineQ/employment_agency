@@ -2,7 +2,7 @@
 import logging
 from flask import render_template, redirect, request
 from app.fill_table import fill_db
-from app.utils import update_note, delete_note
+from app.utils import update_note, delete_note, add_note
 from app import app, cursor
 
 
@@ -50,7 +50,10 @@ def note_info(note_id):
     cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
     column_names = cursor.fetchall()
-    return render_template('note.html', table_data=table_data, name=table_name,
+    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
+    types = cursor.fetchall()
+    return render_template('note.html', table_data=table_data, name=table_name, types=types,
                            zip=zip, tables=app.config['TABLES'], column_names=column_names)
 
 
@@ -82,7 +85,7 @@ def update_route():
     table_name = app.config['TABLES'][table]['db']
     if not update_note(table_name, request.form, app.config['TABLES'][table]['key']):
         return 'Bad request', 400
-    return redirect(request.referrer)
+    return redirect(f'/{table}/')
 
 
 @app.route('/agents/delete/', methods=['POST'])
@@ -101,3 +104,39 @@ def delete_route():
         return 'Bad request', 400
     delete_note(table_name, key_field, request.form[key_field], app.config['TABLES'])
     return redirect(f'/{table}/')
+
+
+@app.route('/agents/add/')
+@app.route('/applicants/add/')
+@app.route('/deals/add/')
+@app.route('/education/add/')
+@app.route('/employers/add/')
+@app.route('/positions/add/')
+@app.route('/vacancies/add/')
+def add_note_page():
+    """ Страница добавления записи в таблице """
+    table_name = request.path[1:request.path.find('/', 1)]
+    cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
+    column_names = cursor.fetchall()
+    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
+    types = cursor.fetchall()
+    return render_template('add_note.html', types=types, name=table_name,
+                           zip=zip, tables=app.config['TABLES'], column_names=column_names)
+
+
+@app.route('/agents/add/', methods=['POST'])
+@app.route('/applicants/add/', methods=['POST'])
+@app.route('/deals/add/', methods=['POST'])
+@app.route('/education/add/', methods=['POST'])
+@app.route('/employers/add/', methods=['POST'])
+@app.route('/positions/add/', methods=['POST'])
+@app.route('/vacancies/add/', methods=['POST'])
+def add_note_route():
+    """ Страница добавления записи в таблице """
+    table_name = request.path[1:request.path.find('/', 1)]
+    logging.info(request.form)
+    if not add_note(table_name, request.form):
+        return 'Bad request', 400
+    return redirect(f'/{table_name}/')
