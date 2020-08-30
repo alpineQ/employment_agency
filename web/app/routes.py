@@ -1,4 +1,5 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
+import logging
 from flask import render_template, redirect, request
 from app.fill_table import fill_db
 from app.utils import update_note, delete_note, add_note, delete_table
@@ -46,14 +47,12 @@ def note_view(note_id):
     cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']} "
                    f"WHERE {app.config['TABLES'][table_name]['key']} = (?)", note_id)
     table_data = cursor.fetchone()
-    cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+    cursor.execute(f"SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH "
+                   f"FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-    column_names = cursor.fetchall()
-    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-    types = cursor.fetchall()
-    return render_template('note.html', table_data=table_data, name=table_name, types=types,
-                           zip=zip, tables=app.config['TABLES'], column_names=column_names)
+    meta_info = cursor.fetchall()
+    return render_template('note.html', table_data=table_data, name=table_name, meta_info=meta_info,
+                           zip=zip, tables=app.config['TABLES'])
 
 
 @app.route('/fill_db/', methods=['POST'])
@@ -66,7 +65,8 @@ def generate_data():
 @app.route('/clear_db/', methods=['POST'])
 def delete_all_data():
     """ Заполнение БД данными """
-    cursor.execute("DROP DATABASE EmploymentAgencyDB")
+    for table in app.config['TABLES']:
+        delete_table(table, app.config['TABLES'])
     return redirect('/')
 
 
@@ -81,6 +81,7 @@ def update_note_route():
     """ Обновление записи в таблице """
     table = request.path[1:request.path.find('/', 1)]
     table_name = app.config['TABLES'][table]['db']
+    logging.info(request.form)
     if not update_note(table_name, request.form, app.config['TABLES'][table]['key']):
         return 'Bad request', 400
     return redirect(f'/{table}/')
@@ -127,10 +128,11 @@ def add_note_view():
     cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
     column_names = cursor.fetchall()
-    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+    cursor.execute(f"SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH "
+                   f"FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-    types = cursor.fetchall()
-    return render_template('add_note.html', types=types, name=table_name,
+    meta_info = cursor.fetchall()
+    return render_template('add_note.html', meta_info=meta_info, name=table_name,
                            zip=zip, tables=app.config['TABLES'], column_names=column_names)
 
 

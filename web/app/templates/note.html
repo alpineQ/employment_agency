@@ -3,30 +3,38 @@
 {% block content %}
 
 <h1>
-    <a style="color: black;font-size:smaller;"href="/{{ name }}/">
+    <a style="color: black;font-size:smaller;" href="/{{ name }}/">
         <i class="fa fa-long-arrow-left"></i></a> {{ tables[name]['name'] }}
 </h1>
 <form>
-    {% for column_name, field_name, record, type in zip(column_names, tables[name]['fields'], table_data, types) %}
+    {% for info, field_name, record in zip(meta_info, tables[name]['fields'], table_data) %}
     <div class="input-group mb-1">
         <span class="input-group-text">{{ field_name }}</span>
-        {% if column_name[0] == tables[name]['key'] %}
-        <input type="text" class="form-control" name="{{column_name[0]}}" value="{{ record }}" disabled="">
-        {% elif type[0] == 'datetime' %}
+        {% if info[0] == tables[name]['key'] %}
+        <input type="text" class="form-control" value="{{ record }}" disabled=""
+        {% elif info[1] == 'datetime' %}
         {% set date = record.__str__() %}
-        <input type="date" class="form-control" name="{{column_name[0]}}" value="{{ date[:date.find(' ')] }}">
+        <input type="date" class="form-control" name="{{column_name}}" value="{{ date[:date.find(' ')] }}"
+        {% elif column_name == 'Email' %}
+        <input type="email" class="form-control" name="{{column_name}}" value="{{ record }}"
+               placeholder="{{ record }}"
         {% else %}
-        <input type="text" class="form-control" name="{{column_name[0]}}" value="{{ record }}"
-               placeholder="{{ record }}">
+        <input type="text" class="form-control" name="{{column_name}}" value="{{ record }}"
+               placeholder="{{ record }}" maxlength="{{ info[3] }}"
         {% endif %}
+        {% if info[2] == 'NO' %}
+        required=""
+        {% endif %}>
     </div>
     {% endfor %}
 
     <div class="mt-2">
-        <button formaction="/{{name}}/update/" formmethod="post" class="btn btn-primary">
+        <button formaction="/{{name}}/update/" formmethod="post" class="btn btn-primary"
+        name="{{tables[name]['key']}}" value="{{ table_data[tables[name]['key']] }}">
             <i class="fas fa-save"></i> <b>Сохранить</b>
         </button>
-        <button formaction="/{{name}}/delete/{{ table_data[0] }}/" formmethod="post" class="btn btn-danger">
+        <button formaction="/{{name}}/delete/{{ table_data[tables[name]['key']] }}/" formmethod="post" class="btn btn-danger"
+         name="{{tables[name]['key']}}" value="{{ table_data[tables[name]['key']] }}">
             <i class="fas fa-trash"></i> <b>Удалить</b>
         </button>
     </div>

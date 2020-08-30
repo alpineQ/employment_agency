@@ -1,4 +1,5 @@
 """ Функциональная часть веб-приложения """
+import logging
 from uuid import UUID
 from datetime import datetime
 from app import cursor
@@ -6,22 +7,24 @@ from app import cursor
 
 def update_note(table_name, data, key_field):
     """ Обновление записи в таблице """
-    if data[key_field] == '':
+    logging.info('1')
+    if data.get(key_field, '') == '':
         return False
+    logging.info('2')
 
-    cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{table_name}'")
-    meta_info = cursor.fetchall()
+    types = cursor.fetchall()
 
     set_query = ''
     query_values = []
-    for field, info in zip(data, meta_info):
+    for field, field_type in zip(data, types):
         set_query += f"{field} = (?), "
-        if data[field] == 'None':
+        if data[field] == 'None' or data[field] == '':
             query_values.append(None)
-        elif info[0] == 'uniqueidentifier':
+        elif field_type == 'uniqueidentifier':
             query_values.append(UUID(data[field]))
-        elif info[0] == 'datetime':
+        elif field_type == 'datetime':
             if '.' in data[field]:
                 query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S.%f'))
             elif ':' in data[field]:
@@ -88,6 +91,7 @@ def add_note(table_name, data):
     set_query = set_query[:-2]
     values_query = values_query[:-1]
 
+    logging.info(table_name, set_query, values_query)
     sql_query = f"INSERT INTO {table_name} " \
                 f"({set_query}) " \
                 f"VALUES ({values_query})"

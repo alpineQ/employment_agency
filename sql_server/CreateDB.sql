@@ -5,31 +5,31 @@ USE EmploymentAgencyDB
 CREATE TABLE Agents
 (
 	AgentCode uniqueidentifier  NOT NULL ,
-	SecondName nvarchar(20)  NULL ,
-	Name nvarchar(20)  NULL ,
-	Patronymic nvarchar(20)  NULL ,
+	SecondName nvarchar(20)  NOT NULL ,
+	Name nvarchar(20)  NOT NULL ,
+	Patronymic nvarchar(20)  NOT NULL ,
 	PhoneNumber char(16)  NULL ,
 	Email varchar(40)  NULL ,
 	Sex nchar(1)  NULL
 )
-go
+GO
 
 
 ALTER TABLE Agents
 	ADD CONSTRAINT Agents_AgentCode DEFAULT (NEWID()) FOR AgentCode
-go
+GO
 
 ALTER TABLE Agents
 	ADD CONSTRAINT AgentsKey PRIMARY KEY  CLUSTERED (AgentCode ASC)
-go
+GO
 
 
 CREATE TABLE Applicants
 (
 	ApplicantCode uniqueidentifier  NOT NULL ,
-	SecondName nvarchar(20)  NULL ,
-	Name nvarchar(20)  NULL ,
-	Patronymic nvarchar(20)  NULL ,
+	SecondName nvarchar(20) NOT NULL ,
+	Name nvarchar(20) NOT NULL ,
+	Patronymic nvarchar(20) NOT NULL ,
 	ApplicationDate datetime  NULL ,
 	Qualification nvarchar(20)  NULL ,
 	Birthday datetime  NULL ,
@@ -41,20 +41,20 @@ CREATE TABLE Applicants
 	EducationCode uniqueidentifier  NULL ,
 	PositionCode uniqueidentifier  NULL
 )
-go
+GO
 
 
 ALTER TABLE Applicants
 	ADD CONSTRAINT Applicants_ApplicationDate DEFAULT (getdate()) FOR ApplicationDate
-go
+GO
 
 ALTER TABLE Applicants
 	ADD CONSTRAINT Applicants_ApplicationCode DEFAULT (NEWID()) FOR ApplicantCode
-go
+GO
 
 ALTER TABLE Applicants
 	ADD CONSTRAINT ApplicantsKey PRIMARY KEY  CLUSTERED (ApplicantCode ASC)
-go
+GO
 
 
 CREATE TABLE Deals
@@ -68,16 +68,16 @@ CREATE TABLE Deals
 	VacancyCode uniqueidentifier  NULL ,
 	AgentCode uniqueidentifier  NULL
 )
-go
+GO
 
 
 ALTER TABLE Deals
 	ADD CONSTRAINT Deals_DealCode DEFAULT (NEWID()) FOR DealCode
-go
+GO
 
 ALTER TABLE Deals
 	ADD CONSTRAINT DealsKey PRIMARY KEY  CLUSTERED (DealCode ASC)
-go
+GO
 
 
 CREATE TABLE Education
@@ -87,16 +87,16 @@ CREATE TABLE Education
 	Note nvarchar(120)  NULL ,
 	EducationalInstitution char(18)  NULL 
 )
-go
+GO
 
 
 ALTER TABLE Education
 	ADD CONSTRAINT Education_EducationCode DEFAULT (NEWID()) FOR EducationCode
-go
+GO
 
 ALTER TABLE Education
 	ADD CONSTRAINT EducationKey PRIMARY KEY  CLUSTERED (EducationCode ASC)
-go
+GO
 
 
 CREATE TABLE Employers
@@ -108,16 +108,16 @@ CREATE TABLE Employers
 	Email varchar(40)  NULL ,
 	License nvarchar(20)  NULL
 )
-go
+GO
 
 
 ALTER TABLE Employers
 	ADD CONSTRAINT Employer_EmployerCode DEFAULT (NEWID()) FOR EmployerCode
-go
+GO
 
 ALTER TABLE Employers
 	ADD CONSTRAINT EmployersKey PRIMARY KEY  CLUSTERED (EmployerCode ASC)
-go
+GO
 
 
 CREATE TABLE Positions
@@ -126,16 +126,16 @@ CREATE TABLE Positions
 	PositionName nvarchar(60)  NULL ,
 	Industry nvarchar(20)  NULL
 )
-go
+GO
 
 
 ALTER TABLE Positions
 	ADD CONSTRAINT Positions_PositionCode DEFAULT (NEWID()) FOR PositionCode
-go
+GO
 
 ALTER TABLE Positions
 	ADD CONSTRAINT PositionsKey PRIMARY KEY  CLUSTERED (PositionCode ASC)
-go
+GO
 
 
 CREATE TABLE Vacancies
@@ -150,16 +150,13 @@ CREATE TABLE Vacancies
 	Qualification nvarchar(20)  NULL ,
 	EmployerCode uniqueidentifier NULL
 )
-go
+GO
 
 
 ALTER TABLE Vacancies
 	ADD CONSTRAINT Vacancies_VacancyCode DEFAULT (NEWID()) FOR VacancyCode
-go
+GO
 
 ALTER TABLE Vacancies
 	ADD CONSTRAINT VacanciesKey PRIMARY KEY  CLUSTERED (VacancyCode ASC)
-go
-
-
-
+GO
