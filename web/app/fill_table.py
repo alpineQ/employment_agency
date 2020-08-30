@@ -121,8 +121,8 @@ def fill_applicants(position_codes, education_codes):
     logging.info('Заполнение таблицы "Соискатели"...')
     sql_query = "INSERT INTO Applicants " \
                 "(Name, SecondName, Patronymic, Sex, Email, Birthday, " \
-                "PhoneNumber, PositionCode, EducationCode) " \
-                "VALUES (?,?,?,?,?,?,?,?,?);"
+                "PhoneNumber, PositionCode, EducationCode, JobExperience) " \
+                "VALUES (?,?,?,?,?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
         if choice([True, False]):
             name = choice(NAME_MALE)
@@ -138,7 +138,7 @@ def fill_applicants(position_codes, education_codes):
         education_code = choice(education_codes)
         cursor.execute(sql_query, name, second_name, patronymic, sex, generate_email(),
                        generate_date(date(1970, 1, 1), date(2000, 1, 1)), generate_phone_number(),
-                       position_code[0], education_code[0])
+                       position_code[0], education_code[0], randint(0, 10))
     app.config['connection'].commit()
 
 
@@ -170,15 +170,17 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
     cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Сделки"...')
     sql_query = "INSERT INTO Deals " \
-                "(ApplicantCode, VacancyCode, AgentCode, WasPaid, IssueDate, PaymentDate) " \
-                "VALUES (?,?,?,?,?,?);"
+                "(ApplicantCode, VacancyCode, AgentCode, WasPaid, IssueDate, " \
+                "PaymentDate, CommissionFee) " \
+                "VALUES (?,?,?,?,?,?,?);"
     for _ in range(AMOUNT_OF_DEALS):
         issue_date = generate_date(date(2000, 1, 1), date(2020, 1, 1))
         was_paid = choice([True, False])
         payment_date = generate_date(issue_date, date(2020, 1, 1)) if was_paid else None
 
         cursor.execute(sql_query, choice(applicant_codes)[0], choice(vacancy_codes)[0],
-                       choice(agent_codes)[0], 1 if was_paid else 0, issue_date, payment_date)
+                       choice(agent_codes)[0], 1 if was_paid else 0, issue_date, payment_date,
+                       randint(2, 10)*1000)
     app.config['connection'].commit()
 
 

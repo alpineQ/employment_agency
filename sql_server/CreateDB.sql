@@ -36,7 +36,7 @@ CREATE TABLE Applicants
 	Sex nchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
 	PhoneNumber char(16)  NULL ,
-	JobExperience nvarchar(120)  NULL ,
+	JobExperience int  NULL ,
 	Email varchar(40)  NULL ,
 	EducationCode uniqueidentifier  NULL ,
 	PositionCode uniqueidentifier  NULL
@@ -61,7 +61,7 @@ CREATE TABLE Deals
 (
 	DealCode uniqueidentifier  NOT NULL ,
 	IssueDate datetime  NULL ,
-	CommissionFee integer  NULL ,
+	CommissionFee money  NULL ,
 	WasPaid bit  NULL ,
 	PaymentDate datetime  NULL ,
 	ApplicantCode uniqueidentifier  NULL ,
