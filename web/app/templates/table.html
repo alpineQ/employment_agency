@@ -4,7 +4,7 @@
 
 <div class="d-flex justify-content-between">
     <h1>
-        <a style="color: black;font-size:smaller;" href="/"><i class="fa fa-long-arrow-left"></i></a> {{ tables[name]['name'] }}
+        <a style="color: black;font-size:smaller;" href="/"><i class="fa fa-long-arrow-left"></i></a> {{ fullname }}
     </h1>
     <form>
         <a href="/{{name}}/add/" class="btn btn-success mt-2 mb-2">
@@ -16,28 +16,28 @@
     <table class="table">
         <thead>
         <tr>
-            {% for field in tables[name]['fields'][1:] %}
+            {% for field in fields[1:] %}
             <th class="text-center" scope="col">{{ field }}</th>
             {% endfor %}
         </tr>
         </thead>
         <tbody>
         {% for record in table_data %}
-        <tr onclick="window.location='{{ tables[name]['url'] }}{{ record[0] }}/'" class="list-group-item-action"
+        <tr onclick="window.location='./{{ record[0] }}/'" class="list-group-item-action"
             style="cursor: pointer;">
             {% for field, type in zip(record[1:], types[1:]) %}
             <td class="text-center">
-                {% if type[0] == 'uniqueidentifier' and field != None %}
+                {% if type == 'uniqueidentifier' and field != None %}
                 {{ field[:8] }}
-                {% elif type[0] == 'datetime' and field != None %}
+                {% elif type == 'datetime' and field != None %}
                 {% set date = (field).__str__() %}
                 {{ date[:date.find(' ')] }}
-                {% elif type[0] == 'bit' %}
+                {% elif type == 'bit' %}
                 <input class="form-check-input" type="checkbox"
                        {% if field== 1 %}
                        checked
                        {% endif %} disabled>
-                {% elif type[0] == 'money' %}
+                {% elif type == 'money' %}
                 {% set money = field.__str__() %}
                 {{ money[:money.find('.')] }}
                 {% else %}

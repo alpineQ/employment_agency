@@ -160,3 +160,10 @@ GO
 ALTER TABLE Vacancies
 	ADD CONSTRAINT VacanciesKey PRIMARY KEY  CLUSTERED (VacancyCode ASC)
 GO
+
+
+CREATE PROCEDURE AgentFIO AS
+BEGIN
+    SELECT SecondName, Name, Patronymic
+    FROM Agents
+END;

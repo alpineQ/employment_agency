@@ -1,16 +1,82 @@
 """ Функциональная часть веб-приложения """
-import logging
 from uuid import UUID
 from datetime import datetime
 from app import cursor
 
 
+def get_table(table_name, table_info):
+    """ Получение данных табицы """
+    cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{table_info['db']}'")
+    meta_info = cursor.fetchall()
+    types = [info[0] for info in meta_info]
+    if table_name in ['agents', 'applicants']:
+        for field in ['Name', 'SecondName', 'Patronymic']:
+            for i, info in enumerate(meta_info):
+                if info[1] == field:
+                    del meta_info[i]
+                    del types[i]
+                    break
+        types.insert(1, 'nvarchar')
+
+        select_fields = ''
+        for info in meta_info:
+            if info[1] != table_info['key']:
+                select_fields += f', {info[1]}'
+        sql_query = f"SELECT {table_info['key']}, " \
+                    f"SecondName + ' ' + Name + ' ' + Patronymic AS FIO{select_fields} " \
+                    f"FROM {table_info['db']}"
+
+        fields = table_info['fields'].copy()
+        fields.insert(fields.index('Имя'), 'ФИО')
+        for field in ['Имя', 'Фамилия', 'Отчество']:
+            del fields[fields.index(field)]
+    else:
+        sql_query = f"SELECT * FROM {table_info['db']}"
+        fields = table_info['fields']
+    cursor.execute(sql_query)
+    return cursor.fetchall(), fields, types
+
+
+def add_note(table_name, data):
+    """ Добавление записи в таблицу """
+    cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{table_name}'")
+    meta_info = cursor.fetchall()
+
+    set_query = ''
+    values_query = ''
+    query_values = []
+    for field, info in zip(data, meta_info[1:]):
+        set_query += f"{field}, "
+        values_query += '?,'
+        if data[field] == 'None' or data[field] == '':
+            query_values.append(None)
+        elif info[0] == 'uniqueidentifier':
+            query_values.append(UUID(data[field]))
+        elif info[0] == 'datetime':
+            if '.' in data[field]:
+                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S.%f'))
+            elif ':' in data[field]:
+                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S'))
+            else:
+                query_values.append(datetime.strptime(data[field], '%Y-%m-%d'))
+        else:
+            query_values.append(data[field])
+    set_query = set_query[:-2]
+    values_query = values_query[:-1]
+
+    sql_query = f"INSERT INTO {table_name} " \
+                f"({set_query}) " \
+                f"VALUES ({values_query})"
+    cursor.execute(sql_query, *query_values)
+    return True
+
+
 def update_note(table_name, data, key_field):
     """ Обновление записи в таблице """
-    logging.info('1')
     if data.get(key_field, '') == '':
         return False
-    logging.info('2')
 
     cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{table_name}'")
@@ -61,39 +127,3 @@ def delete_table(table_name, tables):
         for dependency in tables[table_name]['dependencies']:
             delete_table(dependency, tables)
     cursor.execute(f"TRUNCATE TABLE {tables[table_name]['db']}")
-
-
-def add_note(table_name, data):
-    """ Добавление записи в таблицу """
-    cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{table_name}'")
-    meta_info = cursor.fetchall()
-
-    set_query = ''
-    values_query = ''
-    query_values = []
-    for field, info in zip(data, meta_info[1:]):
-        set_query += f"{field}, "
-        values_query += '?,'
-        if data[field] == 'None' or data[field] == '':
-            query_values.append(None)
-        elif info[0] == 'uniqueidentifier':
-            query_values.append(UUID(data[field]))
-        elif info[0] == 'datetime':
-            if '.' in data[field]:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S.%f'))
-            elif ':' in data[field]:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S'))
-            else:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d'))
-        else:
-            query_values.append(data[field])
-    set_query = set_query[:-2]
-    values_query = values_query[:-1]
-
-    logging.info(table_name, set_query, values_query)
-    sql_query = f"INSERT INTO {table_name} " \
-                f"({set_query}) " \
-                f"VALUES ({values_query})"
-    cursor.execute(sql_query, *query_values)
-    return True
