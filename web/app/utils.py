@@ -1,37 +1,28 @@
 """ Функциональная часть веб-приложения """
 from uuid import UUID
 from datetime import datetime
-from app import cursor
+from app import cursor, connection
 
 
 def get_table(table_name, table_info):
     """ Получение данных табицы """
-    cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{table_info['db']}'")
-    meta_info = cursor.fetchall()
-    types = [info[0] for info in meta_info]
-    if table_name in ['agents', 'applicants']:
-        for field in ['Name', 'SecondName', 'Patronymic']:
-            for i, info in enumerate(meta_info):
-                if info[1] == field:
-                    del meta_info[i]
-                    del types[i]
-                    break
-        types.insert(1, 'nvarchar')
-
-        select_fields = ''
-        for info in meta_info:
-            if info[1] != table_info['key']:
-                select_fields += f', {info[1]}'
-        sql_query = f"SELECT {table_info['key']}, " \
-                    f"SecondName + ' ' + Name + ' ' + Patronymic AS FIO{select_fields} " \
-                    f"FROM {table_info['db']}"
-
-        fields = table_info['fields'].copy()
-        fields.insert(fields.index('Имя'), 'ФИО')
-        for field in ['Имя', 'Фамилия', 'Отчество']:
-            del fields[fields.index(field)]
+    if table_name == 'agents':
+        sql_query = "EXEC AgentsInfo"
+        types = ['uniqueidentifier', 'nvarchar', 'char', 'varchar', 'nchar']
+        fields = ['ID', 'ФИО', 'Номер телефона', 'Email', 'Пол']
+    elif table_name == 'applicants':
+        sql_query = "SELECT * FROM ApplicantsEducationPosition"
+        types = ['uniqueidentifier', 'nvarchar', 'datetime', 'nvarchar',
+                 'datetime', 'nchar', 'nvarchar', 'char', 'nvarchar', 'varchar',
+                 'nvarchar', 'nvarchar']
+        fields = ['ID', 'ФИО', 'Дата обращения', 'Квалификация', 'Дата рождения',
+                  'Пол', 'Адрес', 'Номер телефона', 'Опыт работы', 'Email',
+                  'Степень образования', 'Должность']
     else:
+        cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+                       f"WHERE TABLE_NAME = '{table_info['db']}'")
+        meta_info = cursor.fetchall()
+        types = [info[0] for info in meta_info]
         sql_query = f"SELECT * FROM {table_info['db']}"
         fields = table_info['fields']
     cursor.execute(sql_query)
@@ -70,6 +61,7 @@ def add_note(table_name, data):
                 f"({set_query}) " \
                 f"VALUES ({values_query})"
     cursor.execute(sql_query, *query_values)
+    connection.commit()
     return True
 
 
@@ -105,6 +97,7 @@ def update_note(table_name, data, key_field):
                 f"SET {set_query} " \
                 f"WHERE {key_field} = (?)"
     cursor.execute(sql_query, *query_values, UUID(data[key_field]))
+    connection.commit()
     return True
 
 
@@ -119,6 +112,7 @@ def delete_note(table_name, key_field, key, tables):
             for dependency_key in dependency_keys:
                 delete_note(dependency, tables[dependency]['key'], dependency_key[0], tables)
     cursor.execute(f'DELETE FROM {table_name} WHERE {key_field} = (?);', UUID(key))
+    connection.commit()
 
 
 def delete_table(table_name, tables):
@@ -127,3 +121,4 @@ def delete_table(table_name, tables):
         for dependency in tables[table_name]['dependencies']:
             delete_table(dependency, tables)
     cursor.execute(f"TRUNCATE TABLE {tables[table_name]['db']}")
+    connection.commit()

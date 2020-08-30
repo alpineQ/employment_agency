@@ -143,10 +143,3 @@ def add_note_route():
     if not add_note(table_name, request.form):
         return 'Bad request', 400
     return redirect(f'/{table_name}/')
-
-
-@app.route('/procedure/')
-def procedure():
-    """ Пример использования хранимой процедуры """
-    cursor.execute('EXEC AgentFIO')
-    return str(cursor.fetchall())

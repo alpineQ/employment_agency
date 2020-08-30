@@ -83,7 +83,8 @@ GO
 CREATE TABLE Education
 (
 	EducationCode uniqueidentifier  NOT NULL ,
-	Education nvarchar(60)  NOT NULL ,
+	EducationDegree nvarchar(20)  NOT NULL ,
+	EducationField nvarchar(30)  NOT NULL ,
 	Note nvarchar(120)  NULL ,
 	EducationalInstitution char(18)  NULL 
 )
@@ -162,8 +163,17 @@ ALTER TABLE Vacancies
 GO
 
 
-CREATE PROCEDURE AgentFIO AS
-BEGIN
-    SELECT SecondName, Name, Patronymic
+CREATE PROCEDURE AgentsInfo AS
+    SELECT AgentCode, SecondName + ' ' + Name + ' ' + Patronymic AS FIO, PhoneNumber, Email, Sex
     FROM Agents
-END;
+GO
+
+CREATE VIEW ApplicantsEducationPosition AS
+SELECT Applicants.ApplicantCode AS Code,
+        Applicants.SecondName + ' ' + Applicants.Name + ' ' + Applicants.Patronymic AS FIO,
+        Applicants.ApplicationDate, Applicants.Qualification, Applicants.Birthday, Applicants.Sex,
+        Applicants.RegistrationAddress, Applicants.PhoneNumber, Applicants.JobExperience,
+        Applicants.Email, Education.EducationDegree, Positions.PositionName
+FROM Applicants INNER JOIN Education ON Applicants.EducationCode = Education.EducationCode
+INNER JOIN Positions ON Applicants.PositionCode = Positions.PositionCode
+GO

@@ -31,7 +31,7 @@ PATRONYMIC_MALE = ['Иванович', 'Андреевич', 'Юрьевич', '
 PATRONYMIC_FEMALE = ['Андреевна', 'Семёновна', 'Сергеевна', 'Дмитриевна', 'Ивановна']
 
 EDUCATION_DEGREE = ['Высшее', 'Среднее', 'Начальное', 'Базовое']
-EDUCATION_INDUSTRY = ['экономики', 'программирования', 'администрирования', 'дизайна']
+EDUCATION_FIELD = ['Экономика', 'Информационная безопасность', 'Менеджмент', 'Дизайн']
 
 
 def fill_db():
@@ -91,7 +91,7 @@ def fill_vacancies(employer_codes):
     for employer_code in employer_codes:
         for _ in range(randint(5, 10)):
             degree = choice(EDUCATION_DEGREE)
-            industry = choice(EDUCATION_INDUSTRY)
+            industry = choice(EDUCATION_FIELD)
             education = f'{degree} образование в области {industry}'
             salary = randint(10, 300)*1000
             cursor.execute(sql_query, employer_code[0], choice(VACANCY_STATUS), choice(INDUSTRIES),
@@ -102,12 +102,10 @@ def fill_vacancies(employer_codes):
 def fill_education():
     """ Заполнение таблицы "Образование" """
     logging.info('Заполнение таблицы "Образование"...')
-    sql_query = "INSERT INTO Education (Education) VALUES (?);"
+    sql_query = "INSERT INTO Education (EducationDegree, EducationField) " \
+                "VALUES (?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
-        degree = choice(EDUCATION_DEGREE)
-        industry = choice(EDUCATION_INDUSTRY)
-        education = f'{degree} образование в области {industry}'
-        cursor.execute(sql_query, education)
+        cursor.execute(sql_query, choice(EDUCATION_DEGREE), choice(EDUCATION_FIELD))
     connection.commit()
 
 
