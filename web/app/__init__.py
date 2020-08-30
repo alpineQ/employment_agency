@@ -16,13 +16,14 @@ logging.basicConfig(format='%(asctime)s %(message)s',
 
 for i in range(app.config['RETRIES_NUM']):
     try:
-        connection = pyodbc.connect(
+        app.config['connection'] = pyodbc.connect(
             'Driver={ODBC Driver 17 for SQL Server};'
             f"Server={app.config['SERVER']};"
             f"Database={app.config['DATABASE']};"
             f"uid={app.config['USERNAME']};"
             f"PWD={app.config['PASSWORD']}"
         )
+        break
     except (pyodbc.InterfaceError, pyodbc.ProgrammingError):
         if i == app.config['RETRIES_NUM'] - 1:
             logging.error('Exceeded amount of retries. Shutting down...')
@@ -31,7 +32,7 @@ for i in range(app.config['RETRIES_NUM']):
         sleep(app.config['RETRIES_TIMEOUT'])
 logging.info("Successfully connected to db")
 
-cursor = connection.cursor()
+app.config['cursor'] = app.config['connection'].cursor()
 
 # pylint: disable=wrong-import-position
 # pylint: disable=cyclic-import

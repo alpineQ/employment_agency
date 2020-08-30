@@ -177,3 +177,21 @@ SELECT Applicants.ApplicantCode AS Code,
 FROM Applicants INNER JOIN Education ON Applicants.EducationCode = Education.EducationCode
 INNER JOIN Positions ON Applicants.PositionCode = Positions.PositionCode
 GO
+
+CREATE LOGIN AgentLogin
+    WITH PASSWORD = 'AgEnTpAsSwOrD123!';
+GO
+
+CREATE USER AgentAccount FOR LOGIN AgentLogin;
+GO
+
+GRANT SELECT ON Agents TO AgentAccount;
+GRANT EXECUTE ON AgentsInfo TO AgentAccount;
+GRANT SELECT ON Applicants TO AgentAccount;
+GRANT SELECT ON ApplicantsEducationPosition TO AgentAccount;
+GRANT SELECT ON Deals TO AgentAccount;
+GRANT SELECT ON Education TO AgentAccount;
+GRANT SELECT ON Employers TO AgentAccount;
+GRANT SELECT ON Positions TO AgentAccount;
+GRANT SELECT ON Vacancies TO AgentAccount;
+GO

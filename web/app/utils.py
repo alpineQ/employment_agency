@@ -1,11 +1,12 @@
 """ Функциональная часть веб-приложения """
 from uuid import UUID
 from datetime import datetime
-from app import cursor, connection
+from app import app
 
 
 def get_table(table_name, table_info):
     """ Получение данных табицы """
+    cursor = app.config['cursor']
     if table_name == 'agents':
         sql_query = "EXEC AgentsInfo"
         types = ['uniqueidentifier', 'nvarchar', 'char', 'varchar', 'nchar']
@@ -31,6 +32,7 @@ def get_table(table_name, table_info):
 
 def add_note(table_name, data):
     """ Добавление записи в таблицу """
+    cursor = app.config['cursor']
     cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{table_name}'")
     meta_info = cursor.fetchall()
@@ -61,12 +63,13 @@ def add_note(table_name, data):
                 f"({set_query}) " \
                 f"VALUES ({values_query})"
     cursor.execute(sql_query, *query_values)
-    connection.commit()
+    app.config['connection'].commit()
     return True
 
 
 def update_note(table_name, data, key_field):
     """ Обновление записи в таблице """
+    cursor = app.config['cursor']
     if data.get(key_field, '') == '':
         return False
 
@@ -97,12 +100,14 @@ def update_note(table_name, data, key_field):
                 f"SET {set_query} " \
                 f"WHERE {key_field} = (?)"
     cursor.execute(sql_query, *query_values, UUID(data[key_field]))
-    connection.commit()
+    app.config['connection'].commit()
     return True
 
 
-def delete_note(table_name, key_field, key, tables):
+def delete_note(table_name, key_field, key):
     """ Рекурсивное удаление записи """
+    cursor = app.config['cursor']
+    tables = app.config['TABLES']
     if tables[table_name].get('dependencies', []):
         for dependency in tables[table_name]['dependencies']:
             cursor.execute(f"SELECT {tables[dependency]['key']} "
@@ -110,15 +115,17 @@ def delete_note(table_name, key_field, key, tables):
                            f"WHERE {key_field} = (?)", UUID(key))
             dependency_keys = cursor.fetchall()
             for dependency_key in dependency_keys:
-                delete_note(dependency, tables[dependency]['key'], dependency_key[0], tables)
+                delete_note(dependency, tables[dependency]['key'], dependency_key[0])
     cursor.execute(f'DELETE FROM {table_name} WHERE {key_field} = (?);', UUID(key))
-    connection.commit()
+    app.config['connection'].commit()
 
 
-def delete_table(table_name, tables):
+def delete_table(table_name):
     """ Рекурсивное удаление таблицы """
+    cursor = app.config['cursor']
+    tables = app.config['TABLES']
     if tables[table_name].get('dependencies', []):
         for dependency in tables[table_name]['dependencies']:
-            delete_table(dependency, tables)
+            delete_table(dependency)
     cursor.execute(f"TRUNCATE TABLE {tables[table_name]['db']}")
-    connection.commit()
+    app.config['connection'].commit()

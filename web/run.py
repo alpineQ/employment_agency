@@ -1,7 +1,7 @@
 """ Flask сервер работы с EmploymentAgencyDB """
-from app import app, connection
+from app import app
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
-    connection.close()
+    app.config['connection'].close()

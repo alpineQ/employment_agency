@@ -3,7 +3,7 @@ from random import choice, randint, randrange
 from string import digits, ascii_lowercase
 from datetime import date, timedelta
 import logging
-from app import cursor, connection
+from app import app
 
 AMOUNT_OF_AGENTS = randint(20, 50)
 AMOUNT_OF_APPLICANTS = randint(400, 500)
@@ -36,6 +36,7 @@ EDUCATION_FIELD = ['Экономика', 'Информационная безо�
 
 def fill_db():
     """ Заполнение всех таблиц БД """
+    cursor = app.config['cursor']
     fill_employers()
     fill_positions()
     fill_agents()
@@ -62,6 +63,8 @@ def fill_db():
 
 def fill_employers():
     """ Заполнение таблицы "Работодатели" """
+    cursor = app.config['cursor']
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Работодатели"...')
     sql_query = "INSERT INTO Employers " \
                 "(EmployerOrganization, Email, PhoneNumber) " \
@@ -69,20 +72,22 @@ def fill_employers():
     for _ in range(AMOUNT_OF_EMPLOYERS):
         employer = choice(EMPLOYER_NAMES) + choice(EMPLOYER_ENDINGS)
         cursor.execute(sql_query, employer, generate_email(), generate_phone_number())
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def fill_positions():
     """ Заполнение таблицы "Должности" """
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Должности"...')
     sql_query = "INSERT INTO Positions (PositionName, Industry) VALUES (?,?);"
     for _ in range(AMOUNT_OF_POSITIONS):
         cursor.execute(sql_query, choice(POSITION), choice(INDUSTRIES))
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def fill_vacancies(employer_codes):
     """ Заполнение таблицы "Вакансии" """
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Вакансии"...')
     sql_query = "INSERT INTO Vacancies " \
                 "(EmployerCode, VacancyStatus, Industry, PlacementDate, " \
@@ -96,21 +101,23 @@ def fill_vacancies(employer_codes):
             salary = randint(10, 300)*1000
             cursor.execute(sql_query, employer_code[0], choice(VACANCY_STATUS), choice(INDUSTRIES),
                            generate_date(date(2000, 1, 1), date(2020, 1, 1)), education, salary)
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def fill_education():
     """ Заполнение таблицы "Образование" """
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Образование"...')
     sql_query = "INSERT INTO Education (EducationDegree, EducationField) " \
                 "VALUES (?,?);"
     for _ in range(AMOUNT_OF_APPLICANTS):
         cursor.execute(sql_query, choice(EDUCATION_DEGREE), choice(EDUCATION_FIELD))
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def fill_applicants(position_codes, education_codes):
     """ Заполнение таблицы "Соискатели" """
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Соискатели"...')
     sql_query = "INSERT INTO Applicants " \
                 "(Name, SecondName, Patronymic, Sex, Email, Birthday, " \
@@ -132,11 +139,12 @@ def fill_applicants(position_codes, education_codes):
         cursor.execute(sql_query, name, second_name, patronymic, sex, generate_email(),
                        generate_date(date(1970, 1, 1), date(2000, 1, 1)), generate_phone_number(),
                        position_code[0], education_code[0])
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def fill_agents():
     """ Заполнение таблицы "Агенты" """
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Агенты"...')
     sql_query = "INSERT INTO Agents " \
                 "(Name, SecondName, Patronymic, Sex, Email, PhoneNumber) " \
@@ -154,11 +162,12 @@ def fill_agents():
             sex = 'Ж'
         cursor.execute(sql_query, name, second_name, patronymic, sex,
                        generate_email(), generate_phone_number())
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def fill_deals(applicant_codes, vacancy_codes, agent_codes):
     """ Заполнение таблицы "Сделки" """
+    cursor = app.config['cursor']
     logging.info('Заполнение таблицы "Сделки"...')
     sql_query = "INSERT INTO Deals " \
                 "(ApplicantCode, VacancyCode, AgentCode, WasPaid, IssueDate, PaymentDate) " \
@@ -170,7 +179,7 @@ def fill_deals(applicant_codes, vacancy_codes, agent_codes):
 
         cursor.execute(sql_query, choice(applicant_codes)[0], choice(vacancy_codes)[0],
                        choice(agent_codes)[0], 1 if was_paid else 0, issue_date, payment_date)
-    connection.commit()
+    app.config['connection'].commit()
 
 
 def generate_phone_number():
