@@ -8,7 +8,7 @@ CREATE TABLE Agents
 	SecondName nvarchar(20)  NOT NULL ,
 	Name nvarchar(20)  NOT NULL ,
 	Patronymic nvarchar(20)  NOT NULL ,
-	PhoneNumber char(16)  NULL ,
+	PhoneNumber varchar(16)  NULL ,
 	Email varchar(40)  NULL ,
 	Sex nchar(1)  NULL
 )
@@ -35,7 +35,7 @@ CREATE TABLE Applicants
 	Birthday datetime  NULL ,
 	Sex nchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
-	PhoneNumber char(16)  NULL ,
+	PhoneNumber varchar(16)  NULL ,
 	JobExperience int  NULL ,
 	Email varchar(40)  NULL ,
 	EducationCode uniqueidentifier  NULL ,
@@ -105,7 +105,7 @@ CREATE TABLE Employers
 	EmployerCode uniqueidentifier  NOT NULL ,
 	EmployerOrganization nvarchar(60)  NOT NULL ,
 	OrganizationAddress nvarchar(120)  NULL ,
-	PhoneNumber char(16)  NULL ,
+	PhoneNumber varchar(16)  NULL ,
 	Email varchar(40)  NULL ,
 	License nvarchar(20)  NULL
 )
@@ -171,7 +171,7 @@ GO
 CREATE VIEW ApplicantsEducationPosition AS
 SELECT Applicants.ApplicantCode AS Code,
         Applicants.SecondName + ' ' + Applicants.Name + ' ' + Applicants.Patronymic AS FIO,
-        Applicants.ApplicationDate, Applicants.Qualification, Applicants.Birthday, Applicants.Sex,
+        Applicants.ApplicationDate, Applicants.Birthday, Applicants.Sex,
         Applicants.RegistrationAddress, Applicants.PhoneNumber, Applicants.JobExperience,
         Applicants.Email, Education.EducationDegree, Positions.PositionName
 FROM Applicants INNER JOIN Education ON Applicants.EducationCode = Education.EducationCode

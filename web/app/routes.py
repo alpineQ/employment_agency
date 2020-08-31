@@ -27,11 +27,17 @@ def index():
 @app.route('/vacancies/')
 def table_view():
     """ Данные таблиц """
+    cursor = app.config['cursor']
     table_name = request.path[1:-1]
-    table_data, fields, types = get_table(table_name, app.config['TABLES'][table_name])
-    return render_template('table.html', table_data=table_data, name=table_name, fields=fields,
-                           username=app.config['USERNAME'], types=types, zip=zip,
-                           tables=app.config['TABLES'])
+    table_data, fields, types = get_table(table_name, app.config['TABLES'][table_name],
+                                          request.args.get('search_field'),
+                                          request.args.get('search_query'))
+    cursor.execute(f"SELECT COLUMN_NAME "
+                   f"FROM INFORMATION_SCHEMA.COLUMNS "
+                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
+    return render_template('table.html', name=table_name, table_data=table_data, zip=zip,
+                           username=app.config['USERNAME'], types=types, fields=fields,
+                           tables=app.config['TABLES'], column_names=cursor.fetchall())
 
 
 @app.route('/agents/<note_id>/')

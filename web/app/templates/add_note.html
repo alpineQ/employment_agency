@@ -11,18 +11,23 @@
     <div class="input-group mb-1">
         <span class="input-group-text">{{ field_name }}</span>
         {% if info[0] == tables[name]['key'] %}
-        <input type="text" class="form-control" disabled=""
-               {% elif info[1] == 'datetime' %}
-        <input type="date" class="form-control" name="{{info[0]}}"
-               {% elif info[0] == 'Email' %}
-        <input type="email" class="form-control" name="{{info[0]}}"
-               {% else %}
-        <input type="text" class="form-control" name="{{info[0]}}"
+            <input type="text" class="form-control" disabled=""
+        {% elif info[1] == 'datetime' %}
+            <input type="date" class="form-control" name="{{info[0]}}"
+        {% elif info[1] in ['int', 'money'] %}
+            <input type="number" class="form-control" name="{{info[0]}}"
+        {% elif info[0] == 'Sex' %}
+            <select class="form-select" name="{{info[0]}}" value="{{ record }}">
+                <option value="М">Мужской</option>
+                <option value="Ж">Женский</option>
+            </select
+        {% elif info[0] == 'Email' %}
+            <input type="email" class="form-control" name="{{info[0]}}"
+        {% else %}
+            <input type="text" class="form-control" name="{{info[0]}}"
                maxlength="{{ info[3] }}"
-               {% endif %}
-               {% if info[2] == 'NO' %}
-        required=""
-        {% endif %}>
+        {% endif %}
+        {% if info[2] == 'NO' %}required=""{% endif %}>
     </div>
     {% endfor %}
 

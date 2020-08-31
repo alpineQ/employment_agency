@@ -14,12 +14,24 @@
         <input type="text" class="form-control" value="{{ record }}" disabled=""
         {% elif info[1] == 'datetime' %}
         {% set date = record.__str__() %}
-        <input type="date" class="form-control" name="{{column_name}}" value="{{ date[:date.find(' ')] }}"
-        {% elif column_name == 'Email' %}
-        <input type="email" class="form-control" name="{{column_name}}" value="{{ record }}"
+        <input type="date" class="form-control" name="{{info[0]}}" value="{{ date[:date.find(' ')] }}"
+        {% elif info[1] in ['int', 'money'] %}
+        <input type="number" class="form-control" name="{{info[0]}}" value="{{ record }}"
+        {% elif info[0] == 'Sex' %}
+          <select class="form-select" name="{{info[0]}}" value="{{ record }}">
+            {% if record == 'М' %}
+            <option value="М" selected>Мужской</option>
+            <option value="Ж">Женский</option>
+            {% else %}
+            <option value="М">Мужской</option>
+            <option value="Ж" selected>Женский</option>
+            {% endif %}
+          </select
+        {% elif info[0] == 'Email' %}
+        <input type="email" class="form-control" name="{{info[0]}}" value="{{ record }}"
                placeholder="{{ record }}"
         {% else %}
-        <input type="text" class="form-control" name="{{column_name}}" value="{{ record }}"
+        <input type="text" class="form-control" name="{{info[0]}}" value="{{ record }}"
                placeholder="{{ record }}" maxlength="{{ info[3] }}"
         {% endif %}
         {% if info[2] == 'NO' %}
@@ -34,7 +46,7 @@
             <i class="fas fa-save"></i> <b>Сохранить</b>
         </button>
         <button formaction="/{{name}}/delete/{{ table_data[tables[name]['key']] }}/" formmethod="post" class="btn btn-danger"
-         name="{{tables[name]['key']}}" value="{{ table_data[tables[name]['key']] }}">
+                name="{{tables[name]['key']}}" value="{{ table_data[tables[name]['key']] }}">
             <i class="fas fa-trash"></i> <b>Удалить</b>
         </button>
     </div>

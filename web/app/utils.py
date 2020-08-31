@@ -4,7 +4,8 @@ from datetime import datetime
 from app import app
 
 
-def get_table(table_name, table_info):
+def get_table(table_name, table_info, constraint_field=None,
+              constraint_value=None, constraint_type=None):
     """ Получение данных табицы """
     cursor = app.config['cursor']
     if table_name == 'agents':
@@ -13,10 +14,10 @@ def get_table(table_name, table_info):
         fields = ['ID', 'ФИО', 'Номер телефона', 'Email', 'Пол']
     elif table_name == 'applicants':
         sql_query = "SELECT * FROM ApplicantsEducationPosition"
-        types = ['uniqueidentifier', 'nvarchar', 'datetime', 'nvarchar',
-                 'datetime', 'nchar', 'nvarchar', 'char', 'nvarchar', 'varchar',
+        types = ['uniqueidentifier', 'nvarchar', 'datetime', 'datetime',
+                 'nchar', 'nvarchar', 'char', 'nvarchar', 'varchar',
                  'nvarchar', 'nvarchar']
-        fields = ['ID', 'ФИО', 'Дата обращения', 'Квалификация', 'Дата рождения',
+        fields = ['ID', 'ФИО', 'Дата обращения', 'Дата рождения',
                   'Пол', 'Адрес', 'Номер телефона', 'Опыт работы', 'Email',
                   'Степень образования', 'Должность']
     else:
@@ -26,6 +27,10 @@ def get_table(table_name, table_info):
         types = [info[0] for info in meta_info]
         sql_query = f"SELECT * FROM {table_info['db']}"
         fields = table_info['fields']
+    # if constraint_field and constraint_value:
+    #     sql_query += f" WHERE {constraint_field} = (?)"
+    #     logging.info(sql_query)
+    #     cursor.execute(sql_query, constraint_value)
     cursor.execute(sql_query)
     return cursor.fetchall(), fields, types
 

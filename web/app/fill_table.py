@@ -191,8 +191,8 @@ def generate_phone_number():
 
 def generate_email():
     """ Генерация адреса элктронной почты """
-    extensions = ['com', 'net', 'org', 'gov']
-    domains = ['gmail', 'yahoo', 'comcast', 'rambler', 'mail', 'hotmail', 'outlook', 'yandex']
+    extensions = ['com', 'net', 'org', 'ru']
+    domains = ['gmail', 'yahoo', 'rambler', 'mail', 'hotmail', 'outlook', 'yandex']
 
     ext = choice(extensions)
     domain = choice(domains)

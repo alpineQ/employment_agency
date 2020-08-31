@@ -2,14 +2,35 @@
 {% block content %}
 <div class="d-flex justify-content-between">
     <h1>
-        <a style="color: black;font-size:smaller;" href="/"><i class="fa fa-long-arrow-left"></i></a> {{ tables[name]['name'] }}
+        <a style="color: black;font-size:smaller;" href="/"><i class="fa fa-long-arrow-left"></i></a> {{
+        tables[name]['name'] }}
     </h1>
+
     <form>
         <a href="/{{name}}/add/" class="btn btn-success mt-2 mb-2">
             <i class="fa fa-plus"></i> <b>Добавить запись</b>
         </a>
     </form>
 </div>
+
+<form class="input-group mb-3">
+    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+            id="field_dropdown">
+        {{ tables[name]['fields'][1] }}
+    </button>
+    <ul class="dropdown-menu">
+        {% for field, column_name in zip(tables[name]['fields'][1:], column_names[1:]) %}
+        <li><a class="dropdown-item" href="#"
+               onclick="document.getElementById(&quot;search_field&quot;).value=&quot;{{ column_name[0] }}&quot;; document.getElementById(&quot;field_dropdown&quot;).innerText=&quot;{{ field }}&quot;">
+            {{ field }}
+        </a></li>
+        {% endfor %}
+    </ul>
+    <input name="search_query" type="text" class="form-control" required>
+    <button formmethod="get" formaction="/{{name}}/" class="btn btn-success" id="search_field"
+            name="search_field" value="{{ column_names[1][0] }}"><b>Поиск</b></button>
+</form>
+
 <div class="table-responsive">
     <table class="table">
         <thead>
