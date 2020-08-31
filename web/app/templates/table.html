@@ -16,27 +16,40 @@
 <form class="input-group mb-3">
     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
             id="field_dropdown">
-        {{ tables[name]['fields'][1] }}
+        {% if search_field %}
+        {{ fields[column_names.index(search_field)] }}
+        {% else %}
+        {{ fields[1] }}
+        {% endif %}
     </button>
     <ul class="dropdown-menu">
-        {% for field, column_name in zip(tables[name]['fields'][1:], column_names[1:]) %}
-        <li><a class="dropdown-item" href="#"
-               onclick="document.getElementById(&quot;search_field&quot;).value=&quot;{{ column_name[0] }}&quot;; document.getElementById(&quot;field_dropdown&quot;).innerText=&quot;{{ field }}&quot;">
+        {% for field, column_name in zip(fields[1:], column_names[1:]) %}
+        <li><a class="dropdown-item" style="cursor: pointer;"
+               onclick="document.getElementById(&quot;search_field&quot;).value=&quot;{{ column_name }}&quot;; document.getElementById(&quot;field_dropdown&quot;).innerText=&quot;{{ field }}&quot;">
             {{ field }}
         </a></li>
         {% endfor %}
     </ul>
-    <input name="search_query" type="text" class="form-control" required>
+    <input name="search_query" type="text" class="form-control"
+           {% if search_query %}
+           value="{{ search_query }}"
+           {% endif %}
+           required>
     <button formmethod="get" formaction="/{{name}}/" class="btn btn-success" id="search_field"
-            name="search_field" value="{{ column_names[1][0] }}"><b>Поиск</b></button>
+            name="search_field"
+            {% if search_field %}
+            value="{{ search_field }}"
+            {% else %}
+            value="{{ column_names[1] }}"
+            {% endif %}><b>Поиск</b></button>
 </form>
 
 <div class="table-responsive">
     <table class="table">
         <thead>
         <tr>
-            {% for field in fields[1:] %}
-            <th class="text-center" scope="col">{{ field }}</th>
+            {% for field, column_name in zip(fields[1:], column_names[1:]) %}
+            <th onclick="window.location='?sort_by={{ column_name }}'" class="text-center" scope="col">{{ field }}</th>
             {% endfor %}
         </tr>
         </thead>

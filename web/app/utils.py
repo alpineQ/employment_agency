@@ -12,6 +12,7 @@ def get_table(table_name, table_info, constraint_field=None,
         sql_query = "EXEC AgentsInfo"
         types = ['uniqueidentifier', 'nvarchar', 'char', 'varchar', 'nchar']
         fields = ['ID', 'ФИО', 'Номер телефона', 'Email', 'Пол']
+        column_names = ['ID', 'FIO', 'PhoneNumber', 'Email', 'Sex']
     elif table_name == 'applicants':
         sql_query = "SELECT * FROM ApplicantsEducationPosition"
         types = ['uniqueidentifier', 'nvarchar', 'datetime', 'datetime',
@@ -20,11 +21,14 @@ def get_table(table_name, table_info, constraint_field=None,
         fields = ['ID', 'ФИО', 'Дата обращения', 'Дата рождения',
                   'Пол', 'Адрес', 'Номер телефона', 'Опыт работы', 'Email',
                   'Степень образования', 'Должность']
+        column_names = ['ID', 'FIO', 'ApplicationDate', 'Birthday', 'Sex', 'RegistrationAddress',
+                        'PhoneNumber', 'JobExperience', 'Email', 'EducationDegree', 'PositionName']
     else:
-        cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+        cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
                        f"WHERE TABLE_NAME = '{table_info['db']}'")
         meta_info = cursor.fetchall()
         types = [info[0] for info in meta_info]
+        column_names = [info[1] for info in meta_info]
         sql_query = f"SELECT * FROM {table_info['db']}"
         fields = table_info['fields']
     # if constraint_field and constraint_value:
@@ -32,7 +36,7 @@ def get_table(table_name, table_info, constraint_field=None,
     #     logging.info(sql_query)
     #     cursor.execute(sql_query, constraint_value)
     cursor.execute(sql_query)
-    return cursor.fetchall(), fields, types
+    return cursor.fetchall(), fields, types, column_names
 
 
 def add_note(table_name, data):
