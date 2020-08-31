@@ -14,6 +14,7 @@ app.config.from_json('config.json')
 logging.basicConfig(format='%(asctime)s %(message)s',
                     level=logging.INFO, datefmt='%m/%d/%Y %H:%M:%S')
 
+pyodbc.native_uuid = True
 for i in range(app.config['RETRIES_NUM']):
     try:
         app.config['connection'] = pyodbc.connect(

@@ -65,17 +65,17 @@
             style="cursor: pointer;">
             {% for field, type in zip(record[1:], types[1:]) %}
             <td class="text-center">
-                {% if type == 'uniqueidentifier' and field != None %}
-                {{ field[:8] }}
-                {% elif type == 'datetime' and field != None %}
-                {% set date = (field).__str__() %}
+                {% if type.__name__ == 'UUID' and field != None %}
+                {{ field.__str__()[:8].upper() }}
+                {% elif type.__name__ == 'datetime' and field != None %}
+                {% set date = field.__str__() %}
                 {{ date[:date.find(' ')] }}
-                {% elif type == 'bit' %}
+                {% elif type.__name__ == 'bit' %}
                 <input class="form-check-input" type="checkbox"
                        {% if field== 1 %}
                        checked
                        {% endif %} disabled>
-                {% elif type == 'money' %}
+                {% elif type.__name__ == 'Decimal' %}
                 {% set money = field.__str__() %}
                 {{ money[:money.find('.')] }}
                 {% else %}

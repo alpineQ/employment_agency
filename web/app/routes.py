@@ -57,10 +57,7 @@ def note_view(note_id):
     cursor.execute(f"SELECT * FROM {app.config['TABLES'][table_name]['db']} "
                    f"WHERE {app.config['TABLES'][table_name]['key']} = (?)", note_id)
     table_data = cursor.fetchone()
-    cursor.execute(f"SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH "
-                   f"FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-    meta_info = cursor.fetchall()
+    meta_info = [(i[0], i[1], i[6], i[3]) for i in cursor.description]
     return render_template('note.html', table_data=table_data, name=table_name, meta_info=meta_info,
                            zip=zip, tables=app.config['TABLES'], username=app.config['USERNAME'])
 
@@ -135,16 +132,12 @@ def add_note_view():
     """ Страница добавления записи в таблице """
     cursor = app.config['cursor']
     table_name = request.path[1:request.path.find('/', 1)]
-    cursor.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-    column_names = cursor.fetchall()
     cursor.execute(f"SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH "
                    f"FROM INFORMATION_SCHEMA.COLUMNS "
                    f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
     meta_info = cursor.fetchall()
     return render_template('add_note.html', meta_info=meta_info, name=table_name, zip=zip,
-                           username=app.config['USERNAME'], tables=app.config['TABLES'],
-                           column_names=column_names)
+                           username=app.config['USERNAME'], tables=app.config['TABLES'])
 
 
 @app.route('/agents/add/', methods=['POST'])

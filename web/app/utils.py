@@ -16,20 +16,10 @@ def get_table(table_name, search_field=None,
         if sort_by is not None:
             sort = 'DESC' if sort_descending else 'ASC'
             sql_query += f" ORDER BY {sort_by} {sort}"
-        types = ['uniqueidentifier', 'nvarchar', 'datetime', 'datetime',
-                 'nchar', 'nvarchar', 'char', 'nvarchar', 'varchar',
-                 'nvarchar', 'nvarchar']
         fields = ['ID', 'ФИО', 'Дата обращения', 'Дата рождения',
                   'Пол', 'Адрес', 'Номер телефона', 'Опыт работы', 'Email',
                   'Степень образования', 'Должность']
-        column_names = ['ID', 'FIO', 'ApplicationDate', 'Birthday', 'Sex', 'RegistrationAddress',
-                        'PhoneNumber', 'JobExperience', 'Email', 'EducationDegree', 'PositionName']
     else:
-        cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                       f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
-        meta_info = cursor.fetchall()
-        types = [info[0] for info in meta_info]
-        column_names = [info[1] for info in meta_info]
         fields = app.config['TABLES'][table_name]['fields']
 
         sql_query = f"EXEC SortedInfo @TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'"
@@ -39,6 +29,8 @@ def get_table(table_name, search_field=None,
         if search_field and search_value:
             sql_query += f", @SEARCH_FIELD = '{search_field}', @SEARCH_VALUE = '{search_value}'"
     cursor.execute(sql_query)
+    column_names = [info[0] for info in cursor.description]
+    types = [info[1] for info in cursor.description]
     return cursor.fetchall(), fields, types, column_names
 
 

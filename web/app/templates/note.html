@@ -12,10 +12,10 @@
         <span class="input-group-text">{{ field_name }}</span>
         {% if info[0] == tables[name]['key'] %}
         <input type="text" class="form-control" value="{{ record }}" disabled=""
-        {% elif info[1] == 'datetime' %}
+        {% elif info[1].__name__ == 'datetime' %}
         {% set date = record.__str__() %}
         <input type="date" class="form-control" name="{{info[0]}}" value="{{ date[:date.find(' ')] }}"
-        {% elif info[1] in ['int', 'money'] %}
+        {% elif info[1].__name__ == 'Decimal' %}
         <input type="number" class="form-control" name="{{info[0]}}" value="{{ record }}"
         {% elif info[0] == 'Sex' %}
           <select class="form-select" name="{{info[0]}}" value="{{ record }}">

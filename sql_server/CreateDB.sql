@@ -162,6 +162,7 @@ ALTER TABLE Vacancies
 	ADD CONSTRAINT VacanciesKey PRIMARY KEY  CLUSTERED (VacancyCode ASC)
 GO
 
+------------------------------------- Хранимые процедуры ------------------------------------------------
 
 CREATE PROCEDURE SortedInfo @TABLE_NAME varchar(20),
                             @SORTBY varchar(30) = NULL,
@@ -180,6 +181,8 @@ SELECT @SQLStatement = @SQLStatement + ' WHERE ' + @SEARCH_FIELD + ' = ' + @SEAR
 EXEC(@SQLStatement)
 GO
 
+------------------------------------- Представления ------------------------------------------------
+
 CREATE VIEW ApplicantsEducationPosition AS
 SELECT Applicants.ApplicantCode AS Code,
         Applicants.SecondName + ' ' + Applicants.Name + ' ' + Applicants.Patronymic AS FIO,
@@ -189,6 +192,8 @@ SELECT Applicants.ApplicantCode AS Code,
 FROM Applicants INNER JOIN Education ON Applicants.EducationCode = Education.EducationCode
 INNER JOIN Positions ON Applicants.PositionCode = Positions.PositionCode
 GO
+
+------------------------------------- Пользователи ------------------------------------------------
 
 CREATE LOGIN AgentLogin
     WITH PASSWORD = 'AgEnTpAsSwOrD123!';
