@@ -4,17 +4,18 @@ from datetime import datetime
 from app import app
 
 
-def get_table(table_name, table_info, constraint_field=None,
-              constraint_value=None, constraint_type=None):
+def get_table(table_name, search_field=None,
+              search_value=None, sort_by=None,
+              sort_descending=False):
     """ Получение данных табицы """
+    # SELECT @ SQLStatement = 'SELECT AgentCode, SecondName + '' '' + Name + '' '' + Patronymic
+    # AS FIO, PhoneNumber, Email, Sex FROM ' +
     cursor = app.config['cursor']
-    if table_name == 'agents':
-        sql_query = "EXEC AgentsInfo"
-        types = ['uniqueidentifier', 'nvarchar', 'char', 'varchar', 'nchar']
-        fields = ['ID', 'ФИО', 'Номер телефона', 'Email', 'Пол']
-        column_names = ['ID', 'FIO', 'PhoneNumber', 'Email', 'Sex']
-    elif table_name == 'applicants':
+    if table_name == 'applicants':
         sql_query = "SELECT * FROM ApplicantsEducationPosition"
+        if sort_by is not None:
+            sort = 'DESC' if sort_descending else 'ASC'
+            sql_query += f" ORDER BY {sort_by} {sort}"
         types = ['uniqueidentifier', 'nvarchar', 'datetime', 'datetime',
                  'nchar', 'nvarchar', 'char', 'nvarchar', 'varchar',
                  'nvarchar', 'nvarchar']
@@ -25,16 +26,18 @@ def get_table(table_name, table_info, constraint_field=None,
                         'PhoneNumber', 'JobExperience', 'Email', 'EducationDegree', 'PositionName']
     else:
         cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                       f"WHERE TABLE_NAME = '{table_info['db']}'")
+                       f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'")
         meta_info = cursor.fetchall()
         types = [info[0] for info in meta_info]
         column_names = [info[1] for info in meta_info]
-        sql_query = f"SELECT * FROM {table_info['db']}"
-        fields = table_info['fields']
-    # if constraint_field and constraint_value:
-    #     sql_query += f" WHERE {constraint_field} = (?)"
-    #     logging.info(sql_query)
-    #     cursor.execute(sql_query, constraint_value)
+        fields = app.config['TABLES'][table_name]['fields']
+
+        sql_query = f"EXEC SortedInfo @TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'"
+        if sort_by is not None:
+            sort = 'DESC' if sort_descending else 'ASC'
+            sql_query += f", @SORTBY = '{sort_by}', @ASCENDING = '{sort}'"
+        if search_field and search_value:
+            sql_query += f", @SEARCH_FIELD = '{search_field}', @SEARCH_VALUE = '{search_value}'"
     cursor.execute(sql_query)
     return cursor.fetchall(), fields, types, column_names
 

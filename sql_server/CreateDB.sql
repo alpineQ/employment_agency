@@ -163,9 +163,21 @@ ALTER TABLE Vacancies
 GO
 
 
-CREATE PROCEDURE AgentsInfo AS
-    SELECT AgentCode, SecondName + ' ' + Name + ' ' + Patronymic AS FIO, PhoneNumber, Email, Sex
-    FROM Agents
+CREATE PROCEDURE SortedInfo @TABLE_NAME varchar(20),
+                            @SORTBY varchar(30) = NULL,
+                            @ASCENDING varchar(4) = NULL,
+                            @SEARCH_FIELD varchar(30) = NULL,
+                            @SEARCH_VALUE nvarchar(120) = NULL AS
+DECLARE @SQLStatement nvarchar(255)
+SELECT @SQLStatement = 'SELECT * FROM ' + @TABLE_NAME
+
+IF @SORTBY IS NOT NULL
+SELECT @SQLStatement = @SQLStatement + ' ORDER BY ' + @SORTBY + ' ' + @ASCENDING
+
+IF @SEARCH_FIELD IS NOT NULL AND @SEARCH_VALUE IS NOT NULL
+SELECT @SQLStatement = @SQLStatement + ' WHERE ' + @SEARCH_FIELD + ' = ' + @SEARCH_VALUE
+
+EXEC(@SQLStatement)
 GO
 
 CREATE VIEW ApplicantsEducationPosition AS
@@ -186,7 +198,7 @@ CREATE USER AgentAccount FOR LOGIN AgentLogin;
 GO
 
 GRANT SELECT ON Agents TO AgentAccount;
-GRANT EXECUTE ON AgentsInfo TO AgentAccount;
+GRANT EXECUTE ON SortedInfo TO AgentAccount;
 GRANT SELECT ON Applicants TO AgentAccount;
 GRANT SELECT ON ApplicantsEducationPosition TO AgentAccount;
 GRANT SELECT ON Deals TO AgentAccount;

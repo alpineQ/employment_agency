@@ -29,13 +29,16 @@ def table_view():
     """ Данные таблиц """
     table_name = request.path[1:-1]
     table_data, fields, types, column_names = get_table(
-        table_name, app.config['TABLES'][table_name],
-        request.args.get('search_field'),
-        request.args.get('search_query')
+        table_name, request.args.get('search_field'),
+        request.args.get('search_query'),
+        sort_by=request.args.get('sort_by'),
+        sort_descending=(request.args.get('desc') == 'True')
     )
     return render_template('table.html', name=table_name, table_data=table_data, zip=zip,
                            username=app.config['USERNAME'], types=types, fields=fields,
                            tables=app.config['TABLES'], column_names=column_names,
+                           sort_by=request.args.get('sort_by'),
+                           sort_descending=(request.args.get('desc') == 'True'),
                            search_query=request.args.get('search_query'),
                            search_field=request.args.get('search_field'))
 
