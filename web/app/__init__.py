@@ -29,7 +29,7 @@ for i in range(app.config['RETRIES_NUM']):
         if i == app.config['RETRIES_NUM'] - 1:
             logging.error('Exceeded amount of retries. Shutting down...')
             sys.exit(-1)
-        logging.warning(f"DB is launching... Retry in {app.config['RETRIES_TIMEOUT']}[{i}]")
+        logging.warning(f"DB is launching[{i}]... Retry in {app.config['RETRIES_TIMEOUT']}")
         sleep(app.config['RETRIES_TIMEOUT'])
 logging.info("Successfully connected to db")
 

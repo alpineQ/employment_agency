@@ -8,26 +8,22 @@ def get_table(table_name, search_field=None,
               search_value=None, sort_by=None,
               sort_descending=False):
     """ Получение данных табицы """
-    # SELECT @ SQLStatement = 'SELECT AgentCode, SecondName + '' '' + Name + '' '' + Patronymic
-    # AS FIO, PhoneNumber, Email, Sex FROM ' +
     cursor = app.config['cursor']
     if table_name == 'applicants':
-        sql_query = "SELECT * FROM ApplicantsEducationPosition"
-        if sort_by is not None:
-            sort = 'DESC' if sort_descending else 'ASC'
-            sql_query += f" ORDER BY {sort_by} {sort}"
         fields = ['ID', 'ФИО', 'Дата обращения', 'Дата рождения',
                   'Пол', 'Адрес', 'Номер телефона', 'Опыт работы', 'Email',
                   'Степень образования', 'Должность']
+        sql_query = "EXEC SortedInfo @TABLE_NAME = 'ApplicantsEducationPosition'"
     else:
         fields = app.config['TABLES'][table_name]['fields']
-
         sql_query = f"EXEC SortedInfo @TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'"
-        if sort_by is not None:
-            sort = 'DESC' if sort_descending else 'ASC'
-            sql_query += f", @SORTBY = '{sort_by}', @ASCENDING = '{sort}'"
-        if search_field and search_value:
-            sql_query += f", @SEARCH_FIELD = '{search_field}', @SEARCH_VALUE = '{search_value}'"
+
+    if sort_by is not None:
+        sort = 'DESC' if sort_descending else 'ASC'
+        sql_query += f", @SORTBY = '{sort_by}', @ASCENDING = '{sort}'"
+    if search_field and search_value:
+        sql_query += f", @SEARCH_FIELD = '{search_field}', @SEARCH_VALUE = '{search_value}'"
+
     cursor.execute(sql_query)
     column_names = [info[0] for info in cursor.description]
     types = [info[1] for info in cursor.description]
@@ -37,9 +33,10 @@ def get_table(table_name, search_field=None,
 def add_note(table_name, data):
     """ Добавление записи в таблицу """
     cursor = app.config['cursor']
-    cursor.execute(f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{table_name}'")
-    meta_info = cursor.fetchall()
+    meta_info = cursor.execute(
+        f"SELECT DATA_TYPE, COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
+        f"WHERE TABLE_NAME = '{table_name}'"
+    ).fetchall()
 
     set_query = ''
     values_query = ''
@@ -47,19 +44,7 @@ def add_note(table_name, data):
     for field, info in zip(data, meta_info[1:]):
         set_query += f"{field}, "
         values_query += '?,'
-        if data[field] == 'None' or data[field] == '':
-            query_values.append(None)
-        elif info[0] == 'uniqueidentifier':
-            query_values.append(UUID(data[field]))
-        elif info[0] == 'datetime':
-            if '.' in data[field]:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S.%f'))
-            elif ':' in data[field]:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S'))
-            else:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d'))
-        else:
-            query_values.append(data[field])
+        query_values.append(make_sql_object(data[field], info[0]))
     set_query = set_query[:-2]
     values_query = values_query[:-1]
 
@@ -77,27 +62,16 @@ def update_note(table_name, data, key_field):
     if data.get(key_field, '') == '':
         return False
 
-    cursor.execute(f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
-                   f"WHERE TABLE_NAME = '{table_name}'")
-    types = cursor.fetchall()
+    types = cursor.execute(
+        f"SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+        f"WHERE TABLE_NAME = '{table_name}'"
+    ).fetchall()
 
     set_query = ''
     query_values = []
     for field, field_type in zip(data, types):
         set_query += f"{field} = (?), "
-        if data[field] == 'None' or data[field] == '':
-            query_values.append(None)
-        elif field_type == 'uniqueidentifier':
-            query_values.append(UUID(data[field]))
-        elif field_type == 'datetime':
-            if '.' in data[field]:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S.%f'))
-            elif ':' in data[field]:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d %H:%M:%S'))
-            else:
-                query_values.append(datetime.strptime(data[field], '%Y-%m-%d'))
-        else:
-            query_values.append(data[field])
+        query_values.append(make_sql_object(data[field], field_type))
 
     set_query = set_query[:-2]
     sql_query = f"UPDATE {table_name} " \
@@ -114,10 +88,11 @@ def delete_note(table_name, key_field, key):
     tables = app.config['TABLES']
     if tables[table_name].get('dependencies', []):
         for dependency in tables[table_name]['dependencies']:
-            cursor.execute(f"SELECT {tables[dependency]['key']} "
-                           f"FROM {tables[dependency]['db']} "
-                           f"WHERE {key_field} = (?)", UUID(key))
-            dependency_keys = cursor.fetchall()
+            dependency_keys = cursor.execute(
+                f"SELECT {tables[dependency]['key']} "
+                f"FROM {tables[dependency]['db']} "
+                f"WHERE {key_field} = (?)", UUID(key)
+            ).fetchall()
             for dependency_key in dependency_keys:
                 delete_note(dependency, tables[dependency]['key'], dependency_key[0])
     cursor.execute(f'DELETE FROM {table_name} WHERE {key_field} = (?);', UUID(key))
@@ -133,3 +108,14 @@ def delete_table(table_name):
             delete_table(dependency)
     cursor.execute(f"TRUNCATE TABLE {tables[table_name]['db']}")
     app.config['connection'].commit()
+
+
+def make_sql_object(field_value, field_type):
+    """ Создание объекта для передачи в cursor.execute """
+    if field_value in ['None', '']:
+        return None
+    if field_type == 'uniqueidentifier':
+        return UUID(field_value)
+    if field_type == 'datetime':
+        return datetime.strptime(field_value, '%Y-%m-%d').date()
+    return field_value

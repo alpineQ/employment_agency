@@ -30,9 +30,9 @@ CREATE TABLE Applicants
 	SecondName nvarchar(20) NOT NULL ,
 	Name nvarchar(20) NOT NULL ,
 	Patronymic nvarchar(20) NOT NULL ,
-	ApplicationDate datetime  NULL ,
+	ApplicationDate date  NULL ,
 	Qualification nvarchar(20)  NULL ,
-	Birthday datetime  NULL ,
+	Birthday date  NULL ,
 	Sex nchar(1)  NOT NULL ,
 	RegistrationAddress nvarchar(120)  NULL ,
 	PhoneNumber varchar(16)  NULL ,
@@ -60,10 +60,10 @@ GO
 CREATE TABLE Deals
 (
 	DealCode uniqueidentifier  NOT NULL ,
-	IssueDate datetime  NULL ,
+	IssueDate date  NULL ,
 	CommissionFee money  NULL ,
 	WasPaid bit  NULL ,
-	PaymentDate datetime  NULL ,
+	PaymentDate date  NULL ,
 	ApplicantCode uniqueidentifier  NULL ,
 	VacancyCode uniqueidentifier  NULL ,
 	AgentCode uniqueidentifier  NULL
@@ -142,7 +142,7 @@ GO
 CREATE TABLE Vacancies
 (
 	VacancyCode uniqueidentifier  NOT NULL ,
-	PlacementDate datetime  NULL ,
+	PlacementDate date  NULL ,
 	Salary money  NULL ,
 	Schedule nvarchar(60)  NULL ,
 	VacancyStatus nvarchar(60)  NOT NULL ,
@@ -164,19 +164,19 @@ GO
 
 ------------------------------------- Хранимые процедуры ------------------------------------------------
 
-CREATE PROCEDURE SortedInfo @TABLE_NAME varchar(20),
-                            @SORTBY varchar(30) = NULL,
-                            @ASCENDING varchar(4) = NULL,
-                            @SEARCH_FIELD varchar(30) = NULL,
+CREATE PROCEDURE SortedInfo @TABLE_NAME nvarchar(40),
+                            @SORTBY nvarchar(30) = NULL,
+                            @ASCENDING nvarchar(4) = NULL,
+                            @SEARCH_FIELD nvarchar(30) = NULL,
                             @SEARCH_VALUE nvarchar(120) = NULL AS
-DECLARE @SQLStatement nvarchar(255)
+DECLARE @SQLStatement nvarchar(512)
 SELECT @SQLStatement = 'SELECT * FROM ' + @TABLE_NAME
 
 IF @SORTBY IS NOT NULL
 SELECT @SQLStatement = @SQLStatement + ' ORDER BY ' + @SORTBY + ' ' + @ASCENDING
 
 IF @SEARCH_FIELD IS NOT NULL AND @SEARCH_VALUE IS NOT NULL
-SELECT @SQLStatement = @SQLStatement + ' WHERE ' + @SEARCH_FIELD + ' = ' + @SEARCH_VALUE
+SELECT @SQLStatement = @SQLStatement + ' WHERE ' + @SEARCH_FIELD + ' = ''' + @SEARCH_VALUE + ''''
 
 EXEC(@SQLStatement)
 GO

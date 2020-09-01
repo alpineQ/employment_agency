@@ -10,12 +10,15 @@
     {% for info, field_name in zip(meta_info[1:], tables[name]['fields'][1:]) %}
     <div class="input-group mb-1">
         <span class="input-group-text">{{ field_name }}</span>
-        {% if info[0] == tables[name]['key'] %}
-            <input type="text" class="form-control" disabled=""
-        {% elif info[1] == 'datetime' %}
+        {% if info[1] == 'date' %}
             <input type="date" class="form-control" name="{{info[0]}}"
         {% elif info[1] in ['int', 'money'] %}
             <input type="number" class="form-control" name="{{info[0]}}"
+        {% elif info[1] == 'bool' %}
+        <select class="form-select" name="{{info[0]}}" value="{{ record }}">
+            <option value="True" selected>+</option>
+            <option value="False">-</option>
+        </select
         {% elif info[0] == 'Sex' %}
             <select class="form-select" name="{{info[0]}}" value="{{ record }}">
                 <option value="М">Мужской</option>

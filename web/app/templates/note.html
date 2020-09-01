@@ -12,11 +12,20 @@
         <span class="input-group-text">{{ field_name }}</span>
         {% if info[0] == tables[name]['key'] %}
         <input type="text" class="form-control" value="{{ record }}" disabled=""
-        {% elif info[1].__name__ == 'datetime' %}
-        {% set date = record.__str__() %}
-        <input type="date" class="form-control" name="{{info[0]}}" value="{{ date[:date.find(' ')] }}"
+        {% elif info[1].__name__ == 'date' %}
+        <input type="date" class="form-control" name="{{info[0]}}" value="{{ record }}"
         {% elif info[1].__name__ == 'Decimal' %}
         <input type="number" class="form-control" name="{{info[0]}}" value="{{ record }}"
+        {% elif info[1].__name__ == 'bool' %}
+        <select class="form-select" name="{{info[0]}}" value="{{ record }}">
+            {% if record == True %}
+            <option value="True" selected>+</option>
+            <option value="False">-</option>
+            {% else %}
+            <option value="True">+</option>
+            <option value="False" selected>-</option>
+            {% endif %}
+        </select
         {% elif info[0] == 'Sex' %}
           <select class="form-select" name="{{info[0]}}" value="{{ record }}">
             {% if record == 'М' %}

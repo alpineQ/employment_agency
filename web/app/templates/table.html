@@ -70,7 +70,7 @@
                 {% elif type.__name__ == 'datetime' and field != None %}
                 {% set date = field.__str__() %}
                 {{ date[:date.find(' ')] }}
-                {% elif type.__name__ == 'bit' %}
+                {% elif type.__name__ == 'bool' %}
                 <input class="form-check-input" type="checkbox"
                        {% if field== 1 %}
                        checked
