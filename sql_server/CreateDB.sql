@@ -168,14 +168,18 @@ CREATE PROCEDURE SortedInfo @TABLE_NAME nvarchar(40),
                             @SORTBY nvarchar(30) = NULL,
                             @ASCENDING nvarchar(4) = NULL,
                             @SEARCH_FIELD nvarchar(30) = NULL,
-                            @SEARCH_VALUE nvarchar(120) = NULL AS
+                            @SEARCH_VALUE nvarchar(120) = NULL,
+                            @SEARCH_N_TYPE bit = 0 AS
 DECLARE @SQLStatement nvarchar(512)
 SELECT @SQLStatement = 'SELECT * FROM ' + @TABLE_NAME
 
 IF @SORTBY IS NOT NULL
 SELECT @SQLStatement = @SQLStatement + ' ORDER BY ' + @SORTBY + ' ' + @ASCENDING
 
-IF @SEARCH_FIELD IS NOT NULL AND @SEARCH_VALUE IS NOT NULL
+IF @SEARCH_FIELD IS NOT NULL AND @SEARCH_VALUE IS NOT NULL AND @SEARCH_N_TYPE = 1
+SELECT @SQLStatement = @SQLStatement + ' WHERE ' + @SEARCH_FIELD + ' = N''' + @SEARCH_VALUE + ''''
+
+IF @SEARCH_FIELD IS NOT NULL AND @SEARCH_VALUE IS NOT NULL AND @SEARCH_N_TYPE = 0
 SELECT @SQLStatement = @SQLStatement + ' WHERE ' + @SEARCH_FIELD + ' = ''' + @SEARCH_VALUE + ''''
 
 EXEC(@SQLStatement)

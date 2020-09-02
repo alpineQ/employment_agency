@@ -9,20 +9,34 @@ def get_table(table_name, search_field=None,
               sort_descending=False):
     """ Получение данных табицы """
     cursor = app.config['cursor']
+    db_name = app.config['TABLES'][table_name]['db']
     if table_name == 'applicants':
         fields = ['ID', 'ФИО', 'Дата обращения', 'Дата рождения',
                   'Пол', 'Адрес', 'Номер телефона', 'Опыт работы', 'Email',
                   'Степень образования', 'Должность']
-        sql_query = "EXEC SortedInfo @TABLE_NAME = 'ApplicantsEducationPosition'"
+        db_name = 'ApplicantsEducationPosition'
     else:
         fields = app.config['TABLES'][table_name]['fields']
-        sql_query = f"EXEC SortedInfo @TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'"
+    sql_query = f"EXEC SortedInfo @TABLE_NAME = {db_name}"
 
     if sort_by is not None:
         sort = 'DESC' if sort_descending else 'ASC'
         sql_query += f", @SORTBY = '{sort_by}', @ASCENDING = '{sort}'"
     if search_field and search_value:
-        sql_query += f", @SEARCH_FIELD = '{search_field}', @SEARCH_VALUE = '{search_value}'"
+        meta_info = cursor.execute(
+            f"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS "
+            f"WHERE TABLE_NAME = '{db_name}'"
+        ).fetchall()
+        column_names = [info[0] for info in meta_info]
+        types = [info[1] for info in meta_info]
+        if types[column_names.index(search_field)] in ['nvarchar', 'nchar']:
+            sql_query += f", @SEARCH_FIELD = '{search_field}', " \
+                         f"@SEARCH_VALUE = N'{search_value}', " \
+                         f"@SEARCH_N_TYPE = 1"
+        else:
+            sql_query += f", @SEARCH_FIELD = '{search_field}', " \
+                         f"@SEARCH_VALUE = '{search_value}', " \
+                         f"@SEARCH_N_TYPE = 0"
 
     cursor.execute(sql_query)
     column_names = [info[0] for info in cursor.description]
