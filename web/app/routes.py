@@ -1,4 +1,6 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
+import logging
+import functools
 from flask import render_template, redirect, request, url_for
 # pylint: disable=c-extension-no-member
 import pyodbc
@@ -7,14 +9,30 @@ from app.utils import update_note, delete_note, add_note, delete_table, get_tabl
 from app import app
 
 
+def check_authorization():
+    """ Проверка авторизации """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if app.config['USERNAME'] == '' or app.config['PASSWORD'] == '':
+                return redirect('/login/')
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 @app.route('/')
+@check_authorization()
 def index():
     """ Список всех таблиц БД """
     cursor = app.config['cursor']
-    for table in app.config['TABLES']:
-        cursor.execute(f"SELECT COUNT(*) FROM {app.config['TABLES'][table]['db']}")
-        app.config['TABLES'][table]['n_records'] = cursor.fetchone()[0]
-    return render_template('index.html', tables=app.config['TABLES'],
+    tables = app.config['TABLES'].copy()
+    if app.config['USERNAME'] == 'AgentLogin':
+        del tables['agents']
+    for table in tables:
+        cursor.execute(f"SELECT COUNT(*) FROM {tables[table]['db']}")
+        tables[table]['n_records'] = cursor.fetchone()[0]
+    return render_template('index.html', tables=tables,
                            username=app.config['USERNAME'])
 
 
@@ -25,15 +43,21 @@ def index():
 @app.route('/employers/')
 @app.route('/positions/')
 @app.route('/vacancies/')
+@check_authorization()
 def table_view():
     """ Данные таблиц """
     table_name = request.path[1:-1]
-    table_data, fields, types, column_names = get_table(
-        table_name, request.args.get('search_field'),
-        request.args.get('search_query'),
-        sort_by=request.args.get('sort_by'),
-        sort_descending=(request.args.get('desc') == 'True')
-    )
+    try:
+        table_data, fields, types, column_names = get_table(
+            table_name, request.args.get('search_field'),
+            request.args.get('search_query'),
+            sort_by=request.args.get('sort_by'),
+            sort_descending=(request.args.get('desc') == 'True')
+        )
+    except pyodbc.ProgrammingError:
+        return render_template(
+            'error.html',
+            error_message='Прав вашего пользователя недостаточно для чтения в этой таблицы')
     return render_template('table.html', name=table_name, table_data=table_data, zip=zip,
                            username=app.config['USERNAME'], types=types, fields=fields,
                            tables=app.config['TABLES'], column_names=column_names,
@@ -50,6 +74,7 @@ def table_view():
 @app.route('/employers/<note_id>/')
 @app.route('/positions/<note_id>/')
 @app.route('/vacancies/<note_id>/')
+@check_authorization()
 def note_view(note_id):
     """ Информация о конкретной записи """
     cursor = app.config['cursor']
@@ -64,6 +89,7 @@ def note_view(note_id):
 
 
 @app.route('/fill_db/', methods=['POST'])
+@check_authorization()
 def generate_data():
     """ Заполнение БД данными """
     fill_db()
@@ -71,6 +97,7 @@ def generate_data():
 
 
 @app.route('/clear_db/', methods=['POST'])
+@check_authorization()
 def delete_all_data():
     """ Заполнение БД данными """
     for table in app.config['TABLES']:
@@ -85,6 +112,7 @@ def delete_all_data():
 @app.route('/employers/update/', methods=['POST'])
 @app.route('/positions/update/', methods=['POST'])
 @app.route('/vacancies/update/', methods=['POST'])
+@check_authorization()
 def update_note_route():
     """ Обновление записи в таблице """
     table = request.path[1:request.path.find('/', 1)]
@@ -101,6 +129,7 @@ def update_note_route():
 @app.route('/employers/delete/<note_id>/', methods=['POST'])
 @app.route('/positions/delete/<note_id>/', methods=['POST'])
 @app.route('/vacancies/delete/<note_id>/', methods=['POST'])
+@check_authorization()
 def delete_note_route(note_id):
     """ Удаление таблицы """
     table = request.path[1:request.path.find('/', 1)]
@@ -115,6 +144,7 @@ def delete_note_route(note_id):
 @app.route('/employers/delete/', methods=['POST'])
 @app.route('/positions/delete/', methods=['POST'])
 @app.route('/vacancies/delete/', methods=['POST'])
+@check_authorization()
 def delete_table_route():
     """ Удаление таблицы """
     table = request.path[1:request.path.find('/', 1)]
@@ -129,6 +159,7 @@ def delete_table_route():
 @app.route('/employers/add/')
 @app.route('/positions/add/')
 @app.route('/vacancies/add/')
+@check_authorization()
 def add_note_view():
     """ Страница добавления записи в таблице """
     cursor = app.config['cursor']
@@ -138,6 +169,7 @@ def add_note_view():
         f"FROM INFORMATION_SCHEMA.COLUMNS "
         f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'"
     ).fetchall()
+    logging.info(meta_info[3])
     return render_template('add_note.html', meta_info=meta_info, name=table_name, zip=zip,
                            username=app.config['USERNAME'], tables=app.config['TABLES'])
 
@@ -149,12 +181,26 @@ def add_note_view():
 @app.route('/employers/add/', methods=['POST'])
 @app.route('/positions/add/', methods=['POST'])
 @app.route('/vacancies/add/', methods=['POST'])
+@check_authorization()
 def add_note_route():
     """ Страница добавления записи в таблице """
     table_name = request.path[1:request.path.find('/', 1)]
-    if not add_note(table_name, request.form):
-        return 'Bad request', 400
+    try:
+        if not add_note(table_name, request.form):
+            return 'Bad request', 400
+    except pyodbc.ProgrammingError:
+        return render_template(
+            'error.html',
+            error_message='Прав вашего пользователя недостаточно для записи в эту таблицу')
     return redirect(f'/{table_name}/')
+
+
+@app.route('/logout/')
+def logout():
+    """ Выход из текущего аккаунта """
+    app.config['USERNAME'] = ''
+    app.config['PASSWORD'] = ''
+    return redirect('/login/')
 
 
 @app.route('/login/')

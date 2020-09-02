@@ -11,11 +11,13 @@
     <div class="input-group mb-1">
         <span class="input-group-text">{{ field_name }}</span>
         {% if info[0] == tables[name]['key'] %}
-        <input type="text" class="form-control" value="{{ record }}" disabled=""
+        <input type="text" class="form-control" value="{{ record.__str__().upper() }}" disabled=""
         {% elif info[1].__name__ == 'date' %}
         <input type="date" class="form-control" name="{{info[0]}}" value="{{ record }}"
         {% elif info[1].__name__ == 'Decimal' %}
-        <input type="number" class="form-control" name="{{info[0]}}" value="{{ record }}"
+        <input type="number" class="form-control" name="{{info[0]}}" value="{{ record.__int__() }}"
+        {% elif info[1].__name__ == 'UUID' %}
+        <input type="text" class="form-control" name="{{info[0]}}" value="{{ record.__str__().upper() }}"
         {% elif info[1].__name__ == 'bool' %}
         <select class="form-select" name="{{info[0]}}" value="{{ record }}">
             {% if record == True %}

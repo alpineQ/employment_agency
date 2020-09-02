@@ -202,11 +202,9 @@ GO
 CREATE LOGIN AgentLogin
     WITH PASSWORD = 'AgEnTpAsSwOrD123!';
 GO
-
 CREATE USER AgentAccount FOR LOGIN AgentLogin;
 GO
 
-GRANT SELECT ON Agents TO AgentAccount;
 GRANT EXECUTE ON SortedInfo TO AgentAccount;
 GRANT SELECT ON Applicants TO AgentAccount;
 GRANT SELECT ON ApplicantsEducationPosition TO AgentAccount;
@@ -215,4 +213,9 @@ GRANT SELECT ON Education TO AgentAccount;
 GRANT SELECT ON Employers TO AgentAccount;
 GRANT SELECT ON Positions TO AgentAccount;
 GRANT SELECT ON Vacancies TO AgentAccount;
+
+GRANT INSERT ON Deals TO AgentAccount;
+GRANT INSERT ON Applicants TO AgentAccount;
+GRANT INSERT ON Education TO AgentAccount;
+GRANT INSERT ON Positions TO AgentAccount;
 GO
