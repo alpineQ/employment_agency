@@ -207,7 +207,7 @@ def logout():
 def login_view():
     """ Смена пользователя (фронтенд) """
     invalid = 'invisible' if not request.args.get('invalid') else ''
-    return render_template('login.html', tables=app.config['TABLES'],
+    return render_template('login.html', tables={},
                            username=app.config['USERNAME'], invalid=invalid)
 
 
