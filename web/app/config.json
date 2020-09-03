@@ -5,6 +5,7 @@
   "USERNAME": "SA",
   "RETRIES_NUM": 5,
   "RETRIES_TIMEOUT": 10,
+  "DARK_THEME": false,
   "TABLES": {
     "agents": {
       "name": "Агенты",

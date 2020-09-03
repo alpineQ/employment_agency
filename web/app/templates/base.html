@@ -16,9 +16,9 @@
     <title>Employment Agency</title>
     {% endif %}
 </head>
-<body>
+<body class="bg-light">
 
-<nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+<nav class="navbar navbar-expand-md navbar-dark bg-secondary sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="/"><i class="fa fa-suitcase"></i> Employment Agency</a></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
@@ -27,25 +27,28 @@
             <ul class="navbar-nav mr-auto mb-2 mb-lg-0">
                 <li class="nav-item dropdown pt-1">
                     <h5 class="nav-link dropdown-toggle pb-1" id="navbarDropdown" role="button" data-toggle="dropdown"
-                       aria-expanded="false">
-                        Таблицы
-                    </h5>
+                        aria-expanded="false">Таблицы</h5>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         {% for table in tables %}
                         <li class="d-flex justify-content-between">
-                            <a style="font-size:large;" class="dropdown-item" href="/{{ table }}/">
-                                {{ tables[table]['name'] }}
-                            </a>
+                            <a style="font-size:large;" class="dropdown-item" href="/{{ table }}/">{{
+                                tables[table]['name'] }}</a>
                             <span class="badge bg-secondary m-2">{{ tables[table].get('n_records', '?') }}</span>
                         </li>
                         {% endfor %}
                     </ul>
                 </li>
             </ul>
-            <span class="navbar-text ml-auto">
+            <form onclick="switchTheme()" class="navbar-text form-check form-switch ml-auto mr-3">
+                <input class="form-check-input" type="checkbox" id="switch-theme" role="button">
+                <label class="form-check-label" for="switch-theme" role="button">
+                    <i class="fas fa-moon text-light"></i>
+                </label>
+            </form>
+            <span class="navbar-text">
         <a class="mr-1">{{ username }}</a>
 
-        <a class="btn btn-sm align-middle btn-outline-secondary mr-2" type="button" href="/logout/"><i
+        <a class="btn btn-danger btn-sm align-middle btn-outline-secondary mr-2" type="button" href="/logout/"><i
                 class="fas fa-key"></i> Выйти</a>
     </span>
         </div>
@@ -58,5 +61,6 @@
 
 <script src="/static/popper.min.js"></script>
 <script src="/static/bootstrap.min.js"></script>
+<script src="/static/dark-mode.js"></script>
 </body>
 </html>

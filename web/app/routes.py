@@ -1,5 +1,4 @@
 """ Веб сервис взаимодействия с БД "Интернет провайдера" """
-import logging
 import functools
 from flask import render_template, redirect, request, url_for
 # pylint: disable=c-extension-no-member
@@ -169,7 +168,6 @@ def add_note_view():
         f"FROM INFORMATION_SCHEMA.COLUMNS "
         f"WHERE TABLE_NAME = '{app.config['TABLES'][table_name]['db']}'"
     ).fetchall()
-    logging.info(meta_info[3])
     return render_template('add_note.html', meta_info=meta_info, name=table_name, zip=zip,
                            username=app.config['USERNAME'], tables=app.config['TABLES'])
 
@@ -232,3 +230,11 @@ def login_route():
     app.config['connection'] = new_connection
     app.config['cursor'] = new_connection.cursor()
     return redirect('/')
+
+
+@app.route('/theme/', methods=['GET', 'POST'])
+def theme():
+    """ Взаимодействие с темой приложения """
+    if request.method == 'POST':
+        app.config['DARK_THEME'] = not app.config['DARK_THEME']
+    return {'dark_theme': app.config['DARK_THEME']}

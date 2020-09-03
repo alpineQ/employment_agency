@@ -3,9 +3,9 @@
 {% block content %}
 
 <div class="d-flex justify-content-between mb-1">
-    <h1>
+    <h1 class="text-dark">
         <i class="fa fa-suitcase"></i> Employment Agency
-        <span style="font-size:medium" class="badge rounded-pill bg-primary align-top">v1.3</span>
+        <span style="font-size:medium" class="badge rounded-pill bg-primary align-top">v1.4</span>
     </h1>
 
     <form>
@@ -23,7 +23,8 @@
 
 <div class="list-group">
     {% for table in tables %}
-    <a href="/{{ table }}/" class="list-group-item list-group-item-action flex-column align-items-start">
+    <a href="/{{ table }}/" class="list-group-item list-group-item-action flex-column align-items-start
+    list-group-item-light">
         <div class="row pt-1">
             <h3 class="col-md-9">
                 <i class="{{ tables[table].get('icon') }}"></i> {{ tables[table]['name'] }}
